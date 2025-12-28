@@ -1,3 +1,5 @@
+/// <reference path="../session.d.ts" />
+
 import { Router } from 'express';
 import { UserModel } from '../entities/user/user.model';
 import { comparePassword, hashPassword } from '../shared/password';
