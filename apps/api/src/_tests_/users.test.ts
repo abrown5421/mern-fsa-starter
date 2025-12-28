@@ -1,15 +1,22 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createUser } from '../features/users/createUser';
-import { connectDB } from '../db';
+import express from 'express';
+import request from 'supertest';
+import userRouter from '../routes/users.routes';
+import { comparePassword } from '../shared/password';
 import { UserModel } from '../entities/user/user.model';
 
 let mongoServer: MongoMemoryServer;
+let app: express.Application;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   process.env.MONGO_URI = mongoServer.getUri();
-  await connectDB();
+  await mongoose.connect(process.env.MONGO_URI!);
+
+  app = express();
+  app.use(express.json());
+  app.use('/api/users', userRouter);
 });
 
 afterAll(async () => {
@@ -18,35 +25,54 @@ afterAll(async () => {
   await mongoServer.stop();
 });
 
-describe('User CRUD', () => {
+describe('Users Feature (Base CRUD + Hooks)', () => {
   let userId: string;
 
-  it('should create a user', async () => {
-    const user = await createUser({
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      password: 'password123',
-      type: 'user',
-    });
-    userId = user._id.toString();
-    expect(user.email).toBe('john@example.com');
-    expect(user.password).not.toBe('password123'); 
+  it('should create a user and hash password', async () => {
+    const res = await request(app)
+      .post('/api/users')
+      .send({
+        firstName: 'Alice',
+        lastName: 'Smith',
+        email: 'alice@example.com',
+        password: 'secret123',
+        type: 'user',
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.firstName).toBe('Alice');
+    expect(res.body.password).not.toBe('secret123'); 
+    userId = res.body._id;
+
+    const userInDb = await UserModel.findById(userId);
+    const match = await comparePassword('secret123', userInDb!.password);
+    expect(match).toBe(true);
   });
 
   it('should read a user', async () => {
-    const user = await UserModel.findById(userId);
-    expect(user?.firstName).toBe('John');
+    const res = await request(app).get(`/api/users/${userId}`);
+    expect(res.status).toBe(200);
+    expect(res.body.email).toBe('alice@example.com');
   });
 
-  it('should update a user', async () => {
-    const user = await UserModel.findByIdAndUpdate(userId, { firstName: 'Jane' }, { new: true });
-    expect(user?.firstName).toBe('Jane');
+  it('should update a user and hash new password', async () => {
+    const res = await request(app)
+      .put(`/api/users/${userId}`)
+      .send({ password: 'newpass123', firstName: 'Alicia' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.firstName).toBe('Alicia');
+
+    const userInDb = await UserModel.findById(userId);
+    const match = await comparePassword('newpass123', userInDb!.password);
+    expect(match).toBe(true);
   });
 
   it('should delete a user', async () => {
-    await UserModel.findByIdAndDelete(userId);
-    const user = await UserModel.findById(userId);
-    expect(user).toBeNull();
+    const res = await request(app).delete(`/api/users/${userId}`);
+    expect(res.status).toBe(204);
+
+    const userInDb = await UserModel.findById(userId);
+    expect(userInDb).toBeNull();
   });
 });
