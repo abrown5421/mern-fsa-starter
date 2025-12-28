@@ -1,13 +1,23 @@
-import request from 'supertest';
-import express from 'express';
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import { connectDB } from '../db';
 
-const app = express();
-app.get('/', (req, res) => res.status(200).send('API is running!'));
+let mongoServer: MongoMemoryServer;
 
-describe('GET /', () => {
-  it('should return 200 and message', async () => {
-    const res = await request(app).get('/');
-    expect(res.statusCode).toEqual(200);
-    expect(res.text).toBe('API is running!');
+beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  process.env.MONGO_URI = mongoServer.getUri();
+  await connectDB();
+}, 30000);
+
+afterAll(async () => {
+  await mongoose.connection.dropDatabase();
+  await mongoose.connection.close();
+  if (mongoServer) await mongoServer.stop();
+});
+
+describe('MongoDB connection', () => {
+  it('should connect to the database', async () => {
+    expect(mongoose.connection.readyState).toBe(1); 
   });
 });
