@@ -1,5 +1,5 @@
 import { UserModel } from '../entities/user/user.model';
-import { createBaseCRUD } from '../shared/baseCrud';
+import { createBaseCRUD } from '../shared/base';
 import { hashPassword } from '../shared/password';
 
 const userRouter = createBaseCRUD(UserModel, {

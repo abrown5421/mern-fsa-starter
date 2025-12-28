@@ -15,7 +15,10 @@
   "packageManager": "pnpm@10.26.2",
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
+    "@types/express-session": "^1.18.2",
+    "@types/figlet": "^1.7.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.0.3",
     "@types/supertest": "^6.0.3",
@@ -26,6 +29,11 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "bcrypt": "^6.0.0"
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "express-session": "^1.18.2",
+    "figlet": "^1.9.4",
+    "jsonwebtoken": "^9.0.3"
   }
 }

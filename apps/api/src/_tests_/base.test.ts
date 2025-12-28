@@ -1,6 +1,6 @@
 import mongoose, { Schema, model, Document } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createBaseCRUD } from '../shared/baseCrud';
+import { createBaseCRUD } from '../shared/base';
 import express from 'express';
 import request from 'supertest';
 
