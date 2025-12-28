@@ -22,6 +22,15 @@ export const createBaseCRUD = <T extends Document>(
     }
   });
 
+  router.get('/', async (req, res) => {
+    try {
+      const docs = await model.find({});
+      res.json(docs);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+
   router.get('/:id', async (req, res) => {
     try {
       const doc = await model.findById(req.params.id);
