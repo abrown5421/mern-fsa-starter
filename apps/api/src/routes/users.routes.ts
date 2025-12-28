@@ -1,55 +1,16 @@
-import { Router } from 'express';
-import { createUser } from '../features/users/createUser';
 import { UserModel } from '../entities/user/user.model';
+import { createBaseCRUD } from '../shared/baseCrud';
+import { hashPassword } from '../shared/password';
 
-const router = Router();
-
-router.post('/', async (req, res) => {
-  try {
-    const user = await createUser(req.body);
-    res.status(201).json(user);
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-        console.log(err.message); 
-    } else {
-        console.log("An unexpected error occurred", err);
-    }
-  }
+const userRouter = createBaseCRUD(UserModel, {
+  preCreate: async (data) => {
+    if (data.password) data.password = await hashPassword(data.password);
+    return data;
+  },
+  preUpdate: async (data) => {
+    if (data.password) data.password = await hashPassword(data.password);
+    return data;
+  },
 });
 
-router.get('/:id', async (req, res) => {
-  try {
-    const user = await UserModel.findById(req.params.id);
-    res.json(user);
-  } catch (err) {
-    res.status(404).json({ error: 'User not found' });
-  }
-});
-
-router.put('/:id', async (req, res) => {
-  try {
-    const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(user);
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-        console.log(err.message); 
-    } else {
-        console.log("An unexpected error occurred", err);
-    }
-  }
-});
-
-router.delete('/:id', async (req, res) => {
-  try {
-    await UserModel.findByIdAndDelete(req.params.id);
-    res.status(204).send();
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-        console.log(err.message); 
-    } else {
-        console.log("An unexpected error occurred", err);
-    }
-  }
-});
-
-export default router;
+export default userRouter;
