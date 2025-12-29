@@ -4,7 +4,6 @@ import { useAppSelector, useAppDispatch } from '../../app/store/hooks';
 import { closeDrawer } from './drawerSlice';
 import { AnchorPoint } from './drawerTypes';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { P } from 'framer-motion/dist/types.d-DagZKalS';
 import DrawerNavbar from '../navbar/NavbarDrawer';
 
 const drawerVariants = (anchor: AnchorPoint) => {
