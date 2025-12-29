@@ -1,5 +1,47 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'PrimaryFont';
+  src: url('/assets/fonts/primary.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SecondaryFont';
+  src: url('/assets/fonts/secondary.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@theme {
+  --color-primary: oklch(0.7724 0.172798 65.367);
+  --color-primary-contrast: oklch(0.9846 0.0017 247.84);
+  --color-secondary: oklch(0.1296 0.0274 261.69);
+  --color-secondary-contrast: oklch(0.9846 0.0017 247.84);
+  --color-accent: oklch(0.4747 0.135757 44.9806);
+  --color-accent-contrast: oklch(0.9846 0.0017 247.84);
+
+  --color-success: oklch(0.6261 0.185969 147.0226);
+  --color-success-contrast: oklch(1 0 0);
+  --color-error: oklch(0.6996 0.1915 22.03);
+  --color-error-contrast: oklch(1 0 0);
+  --color-warning: oklch(0.8471 0.2023 88.77);
+  --color-warning-contrast: oklch(1 0 0);
+  --color-info: oklch(0.68 0.1283 237.18);
+  --color-info-contrast: oklch(1 0 0);
+  
+  --color-neutral: oklch(0.9846 0.0017 247.84);
+  --color-neutral-contrast: oklch(0.1296 0.0274 261.69);
+  --color-neutral2: oklch(0.9276 0.0058 264.53);
+  --color-neutral2-contrast: oklch(0.1296 0.0274 261.69);
+  --color-neutral3: oklch(0.7071 0.0224 261.75);
+  --color-neutral3-contrast: oklch(0.1296 0.0274 261.69);
+  
+  --font-primary: 'PrimaryFont', sans-serif;
+  --font-secondary: 'SecondaryFont', sans-serif;
+}
+
 html, body {
   width: 100vw;
   height: 100vh;

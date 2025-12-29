@@ -8,12 +8,14 @@ const App: React.FC = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth" element={<Auth />} />
-      </Routes>
-    </AnimatePresence>
+    <div className="w-screen h-screen bg-neutral-contrast font-secondary">
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth" element={<Auth />} />
+        </Routes>
+      </AnimatePresence>
+    </div>
   );
 };
 
