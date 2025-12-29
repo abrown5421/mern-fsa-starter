@@ -1,16 +1,15 @@
 import { motion } from 'framer-motion';
 import { useAppDispatch } from '../../app/store/hooks';
-import { openAlert } from '../../features/alert/alertSlice';
+import { openDrawer } from '../../features/drawer/drawerSlice';
 
 const Home = () => {
   const dispatch = useAppDispatch();
   const handleClick = () => {
-    dispatch(openAlert({
+    dispatch(openDrawer({
       open: true,
-      closeable: true,
-      severity: 'success',
-      message: 'testing the alert',
-      anchor: {x: 'right', y: 'bottom'}
+      drawerContent: 'navbar',
+      anchor: 'right',
+      title: 'Hello!'
    }))
   }
 
