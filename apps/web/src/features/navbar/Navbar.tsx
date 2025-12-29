@@ -1,26 +1,29 @@
-import React, { useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bars3Icon } from '@heroicons/react/24/solid';
-import { useAppDispatch } from '../../app/store/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
 import { openDrawer } from '../drawer/drawerSlice';
 import { motion } from 'framer-motion';
 
 const Navbar: React.FC = () => {
   const dispatch = useAppDispatch();
-  const isAuth = useLocation().pathname === '/auth'
+  const location = useLocation();
+  const isAuth = location.pathname === '/auth';
+  
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  
 
-  useEffect(()=>{console.log(isAuth)}, [isAuth])
   const getGreeting = () => {
     const hour = new Date().getHours();
     
-        if (hour < 12) {
-            return 'Good Morning';
-        } else if (hour < 19) {
-            return 'Good Afternoon';
-        } else {
-            return 'Good Evening';
-        }
-    };
+    if (hour < 12) {
+      return 'Good Morning';
+    } else if (hour < 19) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  };
 
   const handleClick = () => {
     dispatch(
@@ -28,14 +31,14 @@ const Navbar: React.FC = () => {
         open: true,
         drawerContent: 'navbar',
         anchor: 'right',
-        title: getGreeting(),
+        title: user ? `${getGreeting()}, ${user.firstName}` : getGreeting(),
       })
     );
-  };  
+  };
 
   return (
     <div className="bg-neutral flex flex-row justify-between items-center px-4 nav relative z-10 shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
-      <div className="font-primary">Logo</div>
+      <div className="text-xl font-bold font-primary">Logo</div>
       <div className="hidden lg:flex items-center">
         <Link className="px-4" to="/">
           Home
@@ -43,23 +46,47 @@ const Navbar: React.FC = () => {
         <Link className="px-4" target="_blank" to="https://google.com">
           Test
         </Link>
-        <motion.div
+        
+        {!isAuthenticated && (
+          <motion.div
             initial={{ width: 0, opacity: 0 }}
             animate={{
-                width: isAuth ? 0 : 'auto',
-                opacity: isAuth ? 0 : 1,
+              width: isAuth ? 0 : 'auto',
+              opacity: isAuth ? 0 : 1,
             }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="overflow-hidden" 
-        >
+          >
             <Link
-                className="ml-4 px-4 py-2 bg-primary text-primary-contrast rounded-xl inline-block"
-                to="/auth"
+              className="ml-4 px-4 py-2 bg-primary text-primary-contrast rounded-xl inline-block"
+              to="/auth"
             >
-                Login
+              Login
             </Link>
-        </motion.div>
+          </motion.div>
+        )}
+        
+        {isAuthenticated && user && (
+            <div className="flex items-center ml-4">
+                <div
+                onClick={handleClick}
+                className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer overflow-hidden bg-primary text-primary-contrast text-sm font-semibold"
+                >
+                {user.profileImage ? (
+                    <img
+                    src={user.profileImage}
+                    alt={`${user.firstName} ${user.lastName}`}
+                    className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <>
+                    {`${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`}
+                    </>
+                )}
+                </div>
+            </div>
+        )}
       </div>
       <button
         onClick={handleClick}

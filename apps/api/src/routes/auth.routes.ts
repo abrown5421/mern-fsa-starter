@@ -15,8 +15,20 @@ router.post('/register', async (req, res) => {
     const hashed = await hashPassword(password);
     const user = await UserModel.create({ firstName, lastName, email, password: hashed, type });
 
-    req.session.userId = user._id.toString(); 
-    res.status(201).json({ id: user._id, email: user.email, firstName, lastName });
+    req.session.userId = user._id.toString();
+    
+    const userResponse = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      type: user.type,
+      profileImage: user.profileImage,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+    
+    res.status(201).json(userResponse);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -31,8 +43,20 @@ router.post('/login', async (req, res) => {
     const match = await comparePassword(password, user.password);
     if (!match) return res.status(400).json({ error: 'Invalid credentials' });
 
-    req.session.userId = user._id.toString(); 
-    res.json({ id: user._id, email: user.email, firstName: user.firstName });
+    req.session.userId = user._id.toString();
+    
+    const userResponse = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      type: user.type,
+      profileImage: user.profileImage,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+    
+    res.json(userResponse);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
