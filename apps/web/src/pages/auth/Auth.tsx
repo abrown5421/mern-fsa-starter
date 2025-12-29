@@ -7,7 +7,7 @@ const Auth = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="h-screen"
+      className="h-screen bg-neutral"
     >
       Auth Page
     </motion.div>
