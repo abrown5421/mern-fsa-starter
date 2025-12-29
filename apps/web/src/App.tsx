@@ -5,6 +5,7 @@ import Home from './pages/home/Home';
 import Auth from './pages/auth/Auth';
 import Navbar from './features/navbar/Navbar';
 import Alert from './features/alert/Alert';
+import Drawer from './features/drawer/Drawer';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -19,6 +20,7 @@ const App: React.FC = () => {
         </Routes>
       </AnimatePresence>
       <Alert />
+      <Drawer />
     </div>
   );
 };

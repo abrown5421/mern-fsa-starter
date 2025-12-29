@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppSelector, useAppDispatch } from '../../app/store/hooks';
-import { closeAlert } from './alertSlice';
+import { closeAlert, resetAlert } from './alertSlice';
 
 const Alert: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -11,6 +11,9 @@ const Alert: React.FC = () => {
     if (alert.open) {
       const timer = setTimeout(() => {
         dispatch(closeAlert());
+        setTimeout(() => {
+            dispatch(resetAlert())
+        }, 500)
       }, 4000);
       return () => clearTimeout(timer);
     }

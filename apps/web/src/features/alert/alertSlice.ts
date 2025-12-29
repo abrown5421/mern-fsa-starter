@@ -23,16 +23,15 @@ const activePageSlice = createSlice({
     },
     closeAlert: (state) => {
         state.open = false
-        setTimeout(() => {
-            state = initialState
-        }, 500)
     },
+    resetAlert: () => initialState,
   },
 });
 
 export const {
   openAlert,
-  closeAlert
+  closeAlert,
+  resetAlert
 } = activePageSlice.actions;
 
 export default activePageSlice.reducer;
