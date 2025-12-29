@@ -1,12 +1,15 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Bars3Icon } from '@heroicons/react/24/solid';
 import { useAppDispatch } from '../../app/store/hooks';
 import { openDrawer } from '../drawer/drawerSlice';
+import { motion } from 'framer-motion';
 
 const Navbar: React.FC = () => {
   const dispatch = useAppDispatch();
+  const isAuth = useLocation().pathname === '/auth'
 
+  useEffect(()=>{console.log(isAuth)}, [isAuth])
   const getGreeting = () => {
     const hour = new Date().getHours();
     
@@ -40,12 +43,23 @@ const Navbar: React.FC = () => {
         <Link className="px-4" target="_blank" to="https://google.com">
           Test
         </Link>
-        <Link
-          className="ml-4 px-4 py-2 bg-primary text-primary-contrast rounded-xl"
-          to="/auth"
+        <motion.div
+            initial={{ width: 0, opacity: 0 }}
+            animate={{
+                width: isAuth ? 0 : 'auto',
+                opacity: isAuth ? 0 : 1,
+            }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden" 
         >
-          Login
-        </Link>
+            <Link
+                className="ml-4 px-4 py-2 bg-primary text-primary-contrast rounded-xl inline-block"
+                to="/auth"
+            >
+                Login
+            </Link>
+        </motion.div>
       </div>
       <button
         onClick={handleClick}
