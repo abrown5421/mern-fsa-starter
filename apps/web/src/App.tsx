@@ -1,14 +1,15 @@
 import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import Home from './pages/home/Home';
+import Auth from './pages/auth/Auth';
 
 const App: React.FC = () => {
 
   return (
-    <div data-testid="tailwind-check" className="w-screen h-screen">
-      <div className="flex flex-row">
-        <div className="flex flex-col flex-1">A</div>
-        <div className="flex flex-col flex-1">B</div>
-      </div>
-    </div>
+    <Routes>
+      <Route path='/' element={<Home />} />
+      <Route path='/auth' element={<Auth />} />
+    </Routes>
   );
 };
 
