@@ -21,15 +21,6 @@
   --color-secondary-contrast: oklch(0.9846 0.0017 247.84);
   --color-accent: oklch(0.4747 0.135757 44.9806);
   --color-accent-contrast: oklch(0.9846 0.0017 247.84);
-
-  --color-success: oklch(0.6261 0.185969 147.0226);
-  --color-success-contrast: oklch(1 0 0);
-  --color-error: oklch(0.6996 0.1915 22.03);
-  --color-error-contrast: oklch(1 0 0);
-  --color-warning: oklch(0.8471 0.2023 88.77);
-  --color-warning-contrast: oklch(1 0 0);
-  --color-info: oklch(0.68 0.1283 237.18);
-  --color-info-contrast: oklch(1 0 0);
   
   --color-neutral: oklch(0.9846 0.0017 247.84);
   --color-neutral-contrast: oklch(0.1296 0.0274 261.69);

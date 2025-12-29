@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import Home from './pages/home/Home';
 import Auth from './pages/auth/Auth';
 import Navbar from './features/navbar/Navbar';
+import Alert from './features/alert/Alert';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -17,6 +18,7 @@ const App: React.FC = () => {
           <Route path="/auth" element={<Auth />} />
         </Routes>
       </AnimatePresence>
+      <Alert />
     </div>
   );
 };
