@@ -4,12 +4,7 @@ export interface ApiError {
   error: string;
 }
 
-export interface AuthResponse {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName?: string;
-}
+export interface AuthResponse extends IUser {}
 
 export interface LoginRequest {
   email: string;
@@ -18,7 +13,7 @@ export interface LoginRequest {
 
 export interface RegisterRequest {
   firstName: string;
-  lastName: string;
+  lastName?: string;
   email: string;
   password: string;
   type?: 'user' | 'editor' | 'admin';

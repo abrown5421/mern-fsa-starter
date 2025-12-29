@@ -6,10 +6,20 @@ import Auth from './pages/auth/Auth';
 import Navbar from './features/navbar/Navbar';
 import Alert from './features/alert/Alert';
 import Drawer from './features/drawer/Drawer';
+import { useGetCurrentUserQuery } from './app/store/api/authApi';
 
 const App: React.FC = () => {
   const location = useLocation();
-
+  const { isLoading } = useGetCurrentUserQuery();
+  
+  if (isLoading) {
+    return (
+      <div className="w-screen h-screen bg-neutral-contrast flex items-center justify-center">
+        <div className="text-xl font-primary">Loading...</div>
+      </div>
+    );
+  }
+  
   return (
     <div className="w-screen h-screen bg-neutral-contrast font-secondary">
       <Navbar /> 

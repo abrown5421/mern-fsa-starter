@@ -1,3 +1,4 @@
+// authSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IUser } from '../../types/user.types';
 import { authApi } from '../../app/store/api/authApi';
@@ -29,6 +30,7 @@ const authSlice = createSlice({
     builder.addMatcher(
       authApi.endpoints.login.matchFulfilled,
       (state, { payload }) => {
+        state.user = payload;  
         state.isAuthenticated = true;
       }
     );
@@ -36,6 +38,7 @@ const authSlice = createSlice({
     builder.addMatcher(
       authApi.endpoints.register.matchFulfilled,
       (state, { payload }) => {
+        state.user = payload;  
         state.isAuthenticated = true;
       }
     );
