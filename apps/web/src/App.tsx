@@ -7,6 +7,7 @@ import Navbar from './features/navbar/Navbar';
 import Alert from './features/alert/Alert';
 import Drawer from './features/drawer/Drawer';
 import { useGetCurrentUserQuery } from './app/store/api/authApi';
+import Profile from './pages/profile/Profile';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -27,6 +28,7 @@ const App: React.FC = () => {
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </AnimatePresence>
       <Alert />
