@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.routes';
 import figlet from 'figlet';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
+import integrationsRoutes from './integrations/routes/integrations.routes';
 
 dotenv.config();
 
@@ -42,6 +43,8 @@ app.use(
 
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+
+app.use('/api/integrations', integrationsRoutes);
 
 const PORT = process.env.PORT || 5000;
 
