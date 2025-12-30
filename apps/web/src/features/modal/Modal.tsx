@@ -58,7 +58,7 @@ const Modal: React.FC = () => {
                   onClick={() => dispatch(closeModal())}
                   className="flex items-center justify-center"
                 >
-                  <XMarkIcon className="w-6 h-6 text-neutral-contrast" />
+                  <XMarkIcon className="w-6 h-6 text-neutral-contrast cursor-pointer" />
                 </button>
               </div>
 
