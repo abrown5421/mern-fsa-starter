@@ -8,6 +8,7 @@ import Alert from './features/alert/Alert';
 import Drawer from './features/drawer/Drawer';
 import { useGetCurrentUserQuery } from './app/store/api/authApi';
 import Profile from './pages/profile/Profile';
+import Modal from './features/modal/Modal';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -33,6 +34,7 @@ const App: React.FC = () => {
       </AnimatePresence>
       <Alert />
       <Drawer />
+      <Modal />
     </div>
   );
 };
