@@ -18,8 +18,10 @@ Before starting, make sure you have MongoDB installed and running on your system
 Getting started:
 To create your application, utilize degit to clone the repository with your given project name, install dependencies, run the unit tests, and start the application.
 
+```
 degit abrown5421/mern-fsa-starter my-project
 cd my-project
 pnpm install
 pnpm test
 pnpm dev
+```
