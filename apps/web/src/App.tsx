@@ -9,6 +9,7 @@ import Drawer from './features/drawer/Drawer';
 import { useGetCurrentUserQuery } from './app/store/api/authApi';
 import Profile from './pages/profile/Profile';
 import Modal from './features/modal/Modal';
+import Footer from './features/footer/Footer';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -35,6 +36,7 @@ const App: React.FC = () => {
       <Alert />
       <Drawer />
       <Modal />
+      <Footer />
     </div>
   );
 };
