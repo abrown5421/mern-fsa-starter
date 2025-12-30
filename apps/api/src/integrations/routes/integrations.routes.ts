@@ -3,7 +3,6 @@ import { IntegrationManager } from '../core/integration-manager';
 
 const router = Router();
 
-// Health check endpoint
 router.get('/health', async (req, res) => {
   const manager = IntegrationManager.getInstance();
   const health = await manager.healthCheckAll();
