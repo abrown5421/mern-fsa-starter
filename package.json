@@ -3,11 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "pnpm -r dev",
-    "test": "pnpm -r test"
+    "dev": "pnpm -r dev"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
-    "jest": "^30.2.0"
+    "typescript": "^5.9.3"
   }
 }
