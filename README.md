@@ -22,6 +22,5 @@ To create your application, utilize degit to clone the repository with your give
 degit abrown5421/mern-fsa-starter my-project
 cd my-project
 pnpm install
-pnpm test
 pnpm dev
 ```
