@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "pnpm exec ts-node-dev --respawn src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "test": "pnpm exec jest --watchAll"
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -38,6 +37,7 @@
     "express-session": "^1.18.2",
     "figlet": "^1.9.4",
     "jsonwebtoken": "^9.0.3",
+    "mongodb-memory-server": "^11.0.1",
     "mongoose": "^9.1.1"
   }
 }
