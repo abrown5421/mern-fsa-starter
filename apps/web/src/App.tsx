@@ -14,7 +14,7 @@ import Footer from './features/footer/Footer';
 const App: React.FC = () => {
   const location = useLocation();
   const { isLoading } = useGetCurrentUserQuery();
-  
+
   if (isLoading) {
     return (
       <div className="w-screen h-screen bg-neutral-contrast flex items-center justify-center">
@@ -22,15 +22,16 @@ const App: React.FC = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="w-screen h-screen bg-neutral-contrast font-secondary">
-      <Navbar /> 
+      <Navbar />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<Profile />} />{' '}
+          {/* new routes inserted here */}
         </Routes>
       </AnimatePresence>
       <Alert />

@@ -9,13 +9,12 @@ const Navbar: React.FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const isAuth = location.pathname === '/auth';
-  
+
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
-  
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    
+
     if (hour < 12) {
       return 'Good Morning';
     } else if (hour < 19) {
@@ -46,7 +45,12 @@ const Navbar: React.FC = () => {
         <Link className="px-4" target="_blank" to="https://google.com">
           Test
         </Link>
-        
+        <Link className="px-4" to="/stuff">
+          Stuff
+        </Link>
+
+        {/* new links inserted here */}
+
         {!isAuthenticated && (
           <motion.div
             initial={{ width: 0, opacity: 0 }}
@@ -56,7 +60,7 @@ const Navbar: React.FC = () => {
             }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="overflow-hidden" 
+            className="overflow-hidden"
           >
             <Link
               className="ml-4 px-4 py-2 bg-primary text-primary-contrast rounded-xl inline-block"
@@ -66,26 +70,24 @@ const Navbar: React.FC = () => {
             </Link>
           </motion.div>
         )}
-        
+
         {isAuthenticated && user && (
-            <div className="flex items-center ml-4">
-                <div
-                onClick={handleClick}
-                className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer overflow-hidden bg-primary text-primary-contrast text-sm font-semibold"
-                >
-                {user.profileImage ? (
-                    <img
-                    src={user.profileImage}
-                    alt={`${user.firstName} ${user.lastName}`}
-                    className="w-full h-full object-cover"
-                    />
-                ) : (
-                    <>
-                    {`${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`}
-                    </>
-                )}
-                </div>
+          <div className="flex items-center ml-4">
+            <div
+              onClick={handleClick}
+              className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer overflow-hidden bg-primary text-primary-contrast text-sm font-semibold"
+            >
+              {user.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt={`${user.firstName} ${user.lastName}`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <>{`${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`}</>
+              )}
             </div>
+          </div>
         )}
       </div>
       <button
