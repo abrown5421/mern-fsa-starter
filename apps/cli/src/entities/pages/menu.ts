@@ -3,21 +3,27 @@ import { addPage } from "./addPage.js";
 import { deletePage } from "./deletePage.js";
 
 export async function pagesMenu() {
-  const action = await showMenu('Pages: What would you like to do?', [
-    { label: 'Add page', value: 'add' },
-    { label: 'Edit page', value: 'edit' },
-    { label: 'Delete page', value: 'delete' },
-  ]);
+  let back = false;
 
-  if (action === 'add') {
-    await addPage();
-    return;
+  while (!back) {
+    const action = await showMenu('Pages: What would you like to do?', [
+      { label: 'Add page', value: 'add' },
+      { label: 'Delete page', value: 'delete' },
+      { label: 'Back to Main Menu', value: 'back' }, 
+    ]);
+
+    switch (action) {
+      case 'add':
+        await addPage();
+        break;
+      case 'delete':
+        await deletePage();
+        break;
+      case 'back':
+        back = true;
+        break;
+      default:
+        console.log(`Pages → ${action} (not implemented yet)`);
+    }
   }
-
-  if (action === 'delete') {
-    await deletePage();
-    return;
-  }
-
-  console.log(`Pages → ${action} (not implemented yet)`);
 }

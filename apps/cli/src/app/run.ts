@@ -3,17 +3,28 @@ import { pagesMenu } from "../entities/pages/menu.js";
 import { showMenu } from "../shared/menu.js";
 
 export async function run() {
-  const domain = await showMenu('What would you like to manage?', [
-    { label: 'Pages', value: 'pages' },
-    { label: 'Features', value: 'features' },
-  ]);
+  let exit = false;
 
-  switch (domain) {
-    case 'pages':
-      await pagesMenu();
-      break;
-    case 'features':
-      await featuresMenu();
-      break;
+  while (!exit) {
+    const domain = await showMenu('What would you like to manage?', [
+      { label: 'Pages', value: 'pages' },
+      { label: 'Features', value: 'features' },
+      { label: 'Exit CLI', value: 'exit' }, 
+    ]);
+
+    switch (domain) {
+      case 'pages':
+        await pagesMenu();
+        break;
+      case 'features':
+        await featuresMenu();
+        break;
+      case 'exit':
+        exit = true;
+        console.log('Goodbye!');
+        break;
+      default:
+        console.log('Not implemented yet.');
+    }
   }
 }
