@@ -10,7 +10,6 @@ import { useGetCurrentUserQuery } from "./app/store/api/authApi";
 import Profile from "./pages/profile/Profile";
 import Modal from "./features/modal/Modal";
 import Footer from "./features/footer/Footer";
-import AboutUs from "./pages/aboutUs/AboutUs";
 const App: React.FC = () => {
   const location = useLocation();
   const { isLoading } = useGetCurrentUserQuery();
@@ -32,7 +31,6 @@ const App: React.FC = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />{" "}
           {/* new routes inserted here */}
-          <Route path="/about" element={<AboutUs />} />
         </Routes>
       </AnimatePresence>
       <Alert />
