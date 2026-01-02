@@ -1,10 +1,10 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
-import { closeDrawer } from '../drawer/drawerSlice';
-import { useLogoutMutation } from '../../app/store/api/authApi';
+import React from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
+import { closeDrawer } from "../drawer/drawerSlice";
+import { useLogoutMutation } from "../../app/store/api/authApi";
 
-const DrawerNavbar: React.FC = () => {
+const NavbarDrawer: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation().pathname;
@@ -13,21 +13,21 @@ const DrawerNavbar: React.FC = () => {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
   const classString = (path?: string) =>
-    `py-4 ${location === path ? 'text-primary hover:text-accent' : 'hover:text-primary'}`;
+    `py-4 ${location === path ? "text-primary hover:text-accent" : "hover:text-primary"}`;
 
   const handleLogout = async () => {
     closeOnClick();
     try {
       await logout().unwrap();
-      navigate('/');
+      navigate("/");
     } catch (err) {
-      console.error('Logout failed:', err);
+      console.error("Logout failed:", err);
     }
   };
 
   return (
     <div className="flex flex-col h-full">
-      <Link onClick={closeOnClick} className={classString('/')} to="/">
+      <Link onClick={closeOnClick} className={classString("/")} to="/">
         Home
       </Link>
       <Link
@@ -38,15 +38,16 @@ const DrawerNavbar: React.FC = () => {
       >
         Test
       </Link>
+
+      {/* new links inserted here */}
       <Link
         onClick={closeOnClick}
-        className={classString('/stuff')}
-        to="/stuff"
+        className={classString("/about")}
+        to="/about"
       >
-        Stuff
+        About Us
       </Link>
 
-      {/* new routes inserted here */}
       {!isAuthenticated && (
         <Link
           onClick={closeOnClick}
@@ -61,7 +62,7 @@ const DrawerNavbar: React.FC = () => {
           <div className="my-4 h-px w-full bg-neutral-contrast/10" />
           <Link
             onClick={closeOnClick}
-            className={classString('/profile')}
+            className={classString("/profile")}
             to="/profile"
           >
             Profile
@@ -79,4 +80,4 @@ const DrawerNavbar: React.FC = () => {
   );
 };
 
-export default DrawerNavbar;
+export default NavbarDrawer;

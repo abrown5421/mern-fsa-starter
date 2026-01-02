@@ -1,4 +1,5 @@
 import { showMenu } from "../../shared/menu.js";
+import { addPage } from "./addPage.js";
 
 export async function pagesMenu() {
   const action = await showMenu('Pages: What would you like to do?', [
@@ -7,5 +8,10 @@ export async function pagesMenu() {
     { label: 'Delete page', value: 'delete' },
   ]);
 
-  console.log(`Pages → ${action}`);
+  if (action === 'add') {
+    await addPage();
+    return;
+  }
+
+  console.log(`Pages → ${action} (not implemented yet)`);
 }
