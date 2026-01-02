@@ -1,14 +1,14 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bars3Icon } from '@heroicons/react/24/solid';
-import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
-import { openDrawer } from '../drawer/drawerSlice';
-import { motion } from 'framer-motion';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Bars3Icon } from "@heroicons/react/24/solid";
+import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
+import { openDrawer } from "../drawer/drawerSlice";
+import { motion } from "framer-motion";
 
 const Navbar: React.FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
-  const isAuth = location.pathname === '/auth';
+  const isAuth = location.pathname === "/auth";
 
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
@@ -16,11 +16,11 @@ const Navbar: React.FC = () => {
     const hour = new Date().getHours();
 
     if (hour < 12) {
-      return 'Good Morning';
+      return "Good Morning";
     } else if (hour < 19) {
-      return 'Good Afternoon';
+      return "Good Afternoon";
     } else {
-      return 'Good Evening';
+      return "Good Evening";
     }
   };
 
@@ -28,34 +28,41 @@ const Navbar: React.FC = () => {
     dispatch(
       openDrawer({
         open: true,
-        drawerContent: 'navbar',
-        anchor: 'right',
+        drawerContent: "navbar",
+        anchor: "right",
         title: user ? `${getGreeting()}, ${user.firstName}` : getGreeting(),
-      })
+      }),
     );
   };
+
+  const classString = (path?: string) =>
+    `px-4 transition-all ${location.pathname === path ? "text-primary hover:text-accent" : "hover:text-primary"}`;
 
   return (
     <div className="bg-neutral flex flex-row justify-between items-center px-4 nav relative z-10 shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
       <div className="text-xl font-bold font-primary">Logo</div>
       <div className="hidden lg:flex items-center">
-        <Link className="px-4" to="/">
+        <Link className={classString("/")} to="/">
           Home
         </Link>
-        <Link className="px-4" target="_blank" to="https://google.com">
+        <Link
+          className="px-4 hover:text-primary"
+          target="_blank"
+          to="https://google.com"
+        >
           Test
-        </Link>
-        <Link className="px-4" to="/stuff">
-          Stuff
         </Link>
 
         {/* new links inserted here */}
+        <Link className={classString("/about")} to="/about">
+          About Us
+        </Link>
 
         {!isAuthenticated && (
           <motion.div
             initial={{ width: 0, opacity: 0 }}
             animate={{
-              width: isAuth ? 0 : 'auto',
+              width: isAuth ? 0 : "auto",
               opacity: isAuth ? 0 : 1,
             }}
             exit={{ width: 0, opacity: 0 }}
@@ -84,7 +91,7 @@ const Navbar: React.FC = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <>{`${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`}</>
+                <>{`${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`}</>
               )}
             </div>
           </div>

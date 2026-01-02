@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^8.1.0",
-    "figlet": "^1.9.4"
+    "figlet": "^1.9.4",
+    "prettier": "^3.7.4"
   }
 }
