@@ -54,9 +54,6 @@ const Navbar: React.FC = () => {
         </Link>
 
         {/* new links inserted here */}
-        <Link className={classString("/about")} to="/about">
-          About Us
-        </Link>
 
         {!isAuthenticated && (
           <motion.div
