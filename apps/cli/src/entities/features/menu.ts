@@ -1,4 +1,5 @@
 import { showMenu } from "../../shared/menu.js";
+import { addFeature } from "./addFeature.js";
 
 export async function featuresMenu() {
   let back = false;
@@ -12,10 +13,18 @@ export async function featuresMenu() {
 
     switch (action) {
       case 'add':
-        await console.log('add');
+        try {
+          await addFeature();
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(`\n Error: ${error.message}\n`);
+          } else {
+            console.error('\n An unexpected error occurred\n');
+          }
+        }
         break;
       case 'delete':
-        await console.log('del');
+        console.log('Delete feature functionality coming soon!');
         break;
       case 'back':
         back = true;
