@@ -33,6 +33,9 @@ degit abrown5421/mern-fsa-starter my-project
 cd my-project
 pnpm install
 pnpm dev
+#IMPORTANT: If you'd like to use the CLI, I recommend linking it globally like so:
+cd apps\cli
+pnpm link --global
 ```
 
 The development server will start and serve the frontend application.
