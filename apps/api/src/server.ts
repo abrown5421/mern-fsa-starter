@@ -16,8 +16,7 @@ const allowedOrigins = [process.env.CLIENT_URL || "http://localhost:5173"];
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
+      if (!origin) return callback(null, true); 
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -29,11 +28,6 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-app.options("*", cors({ 
-  origin: allowedOrigins[0],
-  credentials: true,
-}));
 
 app.use(express.json());
 
