@@ -11,9 +11,18 @@ import integrationsRoutes from "./integrations/routes/integrations.routes";
 dotenv.config();
 
 const app = express();
+const allowedOrigins = [process.env.CLIENT_URL || "http://localhost:5173"];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
