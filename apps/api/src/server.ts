@@ -11,42 +11,48 @@ import integrationsRoutes from "./integrations/routes/integrations.routes";
 dotenv.config();
 
 const app = express();
-const allowedOrigins = [process.env.CLIENT_URL || "http://localhost:5173"];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true); 
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`Origin ${origin} not allowed by CORS`));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+console.log('CLIENT_URL:', process.env.CLIENT_URL);
+console.log('NODE_ENV:', process.env.NODE_ENV);
 
-app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    return res.sendStatus(200);
-  }
-  next();
-});
+const allowedOrigins = [
+  process.env.CLIENT_URL || "http://localhost:5173",
+  "http://localhost:5173"
+].filter(Boolean);
+
+console.log('Allowed origins:', allowedOrigins);
+
+const corsOptions = {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    console.log('Request from origin:', origin);
+    
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('Origin not allowed:', origin);
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Set-Cookie"],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  console.log("The server is running!\n");
+  res.json({ message: "Server is running!" });
 });
-
-app.use(cookieParser());
 
 app.use(
   session({
@@ -60,13 +66,13 @@ app.use(
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },
-  }),
+  })
 );
 
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
-
 app.use("/api/integrations", integrationsRoutes);
+
 const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
