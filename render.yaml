@@ -2,6 +2,7 @@ services:
   - type: web
     name: mern-boilerplate-web
     env: static
+    rootDir: apps/web
     staticPublishPath: dist
     routes:
       - type: rewrite
