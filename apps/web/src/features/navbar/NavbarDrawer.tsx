@@ -40,13 +40,6 @@ const NavbarDrawer: React.FC = () => {
       </Link>
 
       {/* new links inserted here */}
-      <Link
-        onClick={closeOnClick}
-        className={classString("/about")}
-        to="/about"
-      >
-        About Us
-      </Link>
 
       {!isAuthenticated && (
         <Link
