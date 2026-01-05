@@ -5,7 +5,6 @@ import { connectDB } from "./db";
 import userRoutes from "./routes/users.routes";
 import authRoutes from "./routes/auth.routes";
 import cookieParser from "cookie-parser";
-import session from "express-session";
 import integrationsRoutes from "./integrations/routes/integrations.routes";
 
 dotenv.config();
@@ -41,39 +40,14 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   exposedHeaders: ["Set-Cookie"],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
-
 app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.json({ message: "Server is running!" });
-});
-
-app.use(
-  session({
-    name: "sid",
-    secret: process.env.SESSION_SECRET || "supersecret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    },
-  })
-);
-
-app.use((req, res, next) => {
-  console.log('Session ID:', req.sessionID);
-  console.log('Session userId:', req.session.userId);
-  console.log('Cookies:', req.cookies);
-  next();
 });
 
 app.use("/api/users", userRoutes);
