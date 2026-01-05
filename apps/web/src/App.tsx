@@ -10,6 +10,7 @@ import { useGetCurrentUserQuery } from "./app/store/api/authApi";
 import Profile from "./pages/profile/Profile";
 import Modal from "./features/modal/Modal";
 import Footer from "./features/footer/Footer";
+import Loader from "./features/loader/Loader";
 const App: React.FC = () => {
   const location = useLocation();
   const { isLoading } = useGetCurrentUserQuery();
@@ -17,7 +18,7 @@ const App: React.FC = () => {
   if (isLoading) {
     return (
       <div className="w-screen h-screen bg-neutral-contrast flex items-center justify-center">
-        <div className="text-xl font-primary">Loading...</div>
+        <Loader />
       </div>
     );
   }
