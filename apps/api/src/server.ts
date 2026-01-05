@@ -65,9 +65,17 @@ app.use(
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7,
+      domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined,
     },
   })
 );
+
+app.use((req, res, next) => {
+  console.log('Session ID:', req.sessionID);
+  console.log('Session userId:', req.session.userId);
+  console.log('Cookies:', req.cookies);
+  next();
+});
 
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
