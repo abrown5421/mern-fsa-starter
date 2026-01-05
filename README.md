@@ -27,6 +27,12 @@ This structure encourages strong boundaries, improves discoverability, and keeps
 ## Demo
 
 You can explore a demo of this boilerplate here: https://mern-boilerplate-web.onrender.com/
+
+You can test the login functionality using the following credentials
+
+* `Email: test.user@gmail.com`
+* `Password: TestUserPassword123!`
+
 ## Installation
 
 Use the following commands to clone and run the project locally using pnpm:
@@ -42,9 +48,4 @@ pnpm build
 pnpm link --global
 ```
 
-The development server will start and serve the frontend application.
-
-You can test the login functionality using the following credentials
-
-* `Email: test.user@gmail.com`
-* `Password: TestUserPassword123!`
+The development server will start and serve the frontend application. Happy Coding!
