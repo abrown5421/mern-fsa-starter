@@ -43,6 +43,9 @@
   .btn-accent {
     @apply cursor-pointer flex w-full justify-center items-center px-4 py-2 border-2 bg-accent text-accent-contrast rounded-xl hover:bg-transparent hover:text-accent hover:border-accent transition-all;
   }
+  .btn-neutral {
+    @apply cursor-pointer flex w-full justify-center items-center px-4 py-2 border-2 bg-neutral text-primary rounded-xl hover:bg-primary hover:text-neutral transition-all;
+  }
   .btn-error {
     @apply cursor-pointer flex w-full justify-center items-center px-4 py-2 border-2 bg-red-500 text-accent-contrast rounded-xl hover:bg-transparent hover:text-red-500 hover:border-red-500 transition-all;
   }
