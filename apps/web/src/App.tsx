@@ -11,6 +11,7 @@ import Profile from "./pages/profile/Profile";
 import Modal from "./features/modal/Modal";
 import Footer from "./features/footer/Footer";
 import Loader from "./features/loader/Loader";
+import PageNotFound from "./pages/pageNotFound/PageNotFound";
 const App: React.FC = () => {
   const location = useLocation();
   const { isLoading } = useGetCurrentUserQuery();
@@ -26,13 +27,14 @@ const App: React.FC = () => {
   return (
     <div className="w-screen h-screen bg-neutral-contrast font-secondary">
       <Navbar />
-      <div className='minus-nav'>
+      <div className="minus-nav">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<Home />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />{" "}
             {/* new routes inserted here */}
+            <Route path="*" element={<PageNotFound />} />
           </Routes>
         </AnimatePresence>
         <Alert />
