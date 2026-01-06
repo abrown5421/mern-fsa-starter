@@ -39,13 +39,13 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       <div className="flex justify-end gap-4 mt-4">
         <button
           onClick={handleCancel}
-          className='mt-auto px-4 py-2 text-center border-2 bg-gray-500 text-primary-contrast rounded-xl hover:bg-neutral hover:border-gray-500 hover:text-gray-500 transition-all cursor-pointer'
+          className='mt-auto btn-gray'
         >
           {cancelText}
         </button>
         <button
           onClick={handleConfirm}
-          className="mt-auto px-4 py-2 text-center border-2 bg-primary text-primary-contrast rounded-xl hover:bg-neutral hover:border-primary hover:text-primary transition-all cursor-pointer"
+          className="mt-auto btn-primary"
         >
           {confirmText}
         </button>

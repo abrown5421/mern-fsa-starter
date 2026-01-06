@@ -33,6 +33,27 @@
   --font-secondary: 'SecondaryFont', sans-serif;
 }
 
+@layer components {
+  .btn-primary {
+    @apply cursor-pointer flex w-full justify-center items-center px-4 py-2 border-2 bg-primary text-primary-contrast rounded-xl hover:bg-transparent hover:text-primary hover:border-primary transition-all;
+  }
+  .btn-secondary {
+    @apply cursor-pointer flex w-full justify-center items-center px-4 py-2 border-2 bg-secondary text-secondary-contrast rounded-xl hover:bg-transparent hover:text-secondary hover:border-secondary transition-all;
+  }
+  .btn-accent {
+    @apply cursor-pointer flex w-full justify-center items-center px-4 py-2 border-2 bg-accent text-accent-contrast rounded-xl hover:bg-transparent hover:text-accent hover:border-accent transition-all;
+  }
+  .btn-error {
+    @apply cursor-pointer flex w-full justify-center items-center px-4 py-2 border-2 bg-red-500 text-accent-contrast rounded-xl hover:bg-transparent hover:text-red-500 hover:border-red-500 transition-all;
+  }
+  .btn-success {
+    @apply cursor-pointer flex w-full justify-center items-center px-4 py-2 border-2 bg-green-600 text-accent-contrast rounded-xl hover:bg-transparent hover:text-green-600 hover:border-green-600 transition-all;
+  }
+  .btn-gray {
+    @apply cursor-pointer flex w-full justify-center items-center px-4 py-2 border-2 bg-gray-500 text-accent-contrast rounded-xl hover:bg-transparent hover:text-gray-500 hover:border-gray-500 transition-all;
+  }
+}
+
 html, body {
   width: 100vw;
   height: 100vh;
@@ -49,7 +70,7 @@ html, body {
 }
 
 .minus-nav {
-  min-height: calc(100vh - 56px);
+  height: calc(100vh - 56px);
   overflow: scroll;
 }
 
