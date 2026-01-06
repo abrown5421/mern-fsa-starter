@@ -234,7 +234,7 @@ const Auth = () => {
             <button
               type="submit"
               disabled={loginLoading || registerLoading}
-              className="border-2 bg-primary border-primary text-white p-2 rounded hover:bg-neutral hover:text-primary transition-all cursor-pointer disabled:opacity-50"
+              className="btn-primary"
             >
               {login ? 'Login' : 'Sign Up'}
             </button>

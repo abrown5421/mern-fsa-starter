@@ -24,7 +24,7 @@ const PageNotFound = () => {
 
       <button
         onClick={() => navigate('/')}
-        className="cursor-pointer px-4 py-2 text-center border-2 bg-primary text-primary-contrast rounded-xl hover:bg-neutral hover:border-primary hover:text-primary transition-all"
+        className="btn-primary"
       >
         Go Home
       </button>

@@ -64,10 +64,10 @@ const Navbar: React.FC = () => {
             }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="overflow-hidden"
+            className="overflow-hidden ml-4"
           >
             <Link
-              className="ml-4 px-4 py-2 bg-primary text-primary-contrast rounded-xl inline-block"
+              className="btn-primary"
               to="/auth"
             >
               Login

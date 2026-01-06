@@ -44,7 +44,7 @@ const NavbarDrawer: React.FC = () => {
       {!isAuthenticated && (
         <Link
           onClick={closeOnClick}
-          className="mt-auto px-4 py-2 text-center border-2 bg-primary border-primary text-primary-contrast hover:bg-neutral hover:border-primary hover:text-primary rounded-xl transition-all"
+          className="mt-auto btn-primary"
           to="/auth"
         >
           Login
@@ -62,7 +62,7 @@ const NavbarDrawer: React.FC = () => {
           </Link>
           <Link
             onClick={handleLogout}
-            className="mt-auto px-4 py-2 text-center border-2 bg-red-500 text-primary-contrast rounded-xl hover:bg-neutral hover:border-red-500 hover:text-red-500 transition-all"
+            className="mt-auto btn-error"
             to="/auth"
           >
             Logout
