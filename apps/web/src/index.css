@@ -55,6 +55,18 @@
   .btn-gray {
     @apply cursor-pointer flex w-full justify-center items-center px-4 py-2 border-2 border-transparent bg-gray-500 text-accent-contrast rounded-xl hover:bg-transparent hover:text-gray-500 hover:border-gray-500 transition-all;
   }
+  .input-primary {
+    @apply p-2 border border-gray-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-primary
+  }
+  .input-secondary {
+    @apply p-2 border border-gray-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-secondary
+  }
+  .input-accent {
+    @apply p-2 border border-gray-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-accent
+  }
+  .input-disabled {
+    @apply p-2 border border-gray-300 bg-gray-200 text-gray-400 rounded-md focus:outline-none focus:ring-0 cursor-not-allowed;
+  }
 }
 
 html, body {

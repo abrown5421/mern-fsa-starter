@@ -26,7 +26,7 @@ const NavbarDrawer: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full text-neutral-contrast">
       <Link onClick={closeOnClick} className={classString("/")} to="/">
         Home
       </Link>
@@ -52,7 +52,7 @@ const NavbarDrawer: React.FC = () => {
       )}
       {isAuthenticated && user && (
         <div className="flex flex-col h-full">
-          <div className="my-4 h-px w-full bg-neutral-contrast/10" />
+          <div className="my-4 h-px w-full bg-neutral-contrast" />
           <Link
             onClick={closeOnClick}
             className={classString("/profile")}

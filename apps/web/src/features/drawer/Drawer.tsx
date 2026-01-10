@@ -92,12 +92,12 @@ const Drawer: React.FC = () => {
             }}
           >
             <div className="flex flex-row items-center justify-between">
-                <div className="flex flex-col text-xl font-bold font-primary">{drawer.title}</div>
+                <div className="flex flex-col text-xl font-bold font-primary text-neutral-contrast">{drawer.title}</div>
                 <div onClick={() => dispatch(closeDrawer())} className="flex flex-col cursor-pointer">
                     <XMarkIcon className="w-7 h-7 text-neutral-contrast" />
                 </div>
             </div>
-            <div className="my-4 h-px w-full bg-neutral-contrast/10" />
+            <div className="my-4 h-px w-full bg-neutral-contrast" />
             {getDrawerContent()}
           </motion.div>
         </>
