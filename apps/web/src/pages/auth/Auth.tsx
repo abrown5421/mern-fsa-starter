@@ -154,7 +154,7 @@ const Auth = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0 }}
           transition={{ type: 'tween', duration: 0.3 }}
-          className="bg-neutral w-full md:w-1/2 lg:w-1/3 p-6 rounded-xl shadow-md"
+          className="bg-neutral text-neutral-contrast w-full md:w-1/2 lg:w-1/3 p-6 rounded-xl shadow-md"
         >
           <div className="text-xl font-bold font-primary text-center mb-4">{login ? 'Login' : 'Sign Up'}</div>
 
@@ -165,7 +165,7 @@ const Auth = () => {
                 placeholder="Email"
                 value={form.email}
                 onChange={(e) => handleChange('email', e.target.value)}
-                className={`p-2 rounded border ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-400`}
+                className={`input-primary ${errors.email ? 'border-red-500' : 'border-gray-300'} `}
               />
               {errors.email && <span className="text-red-500 text-sm mt-1">{errors.email}</span>}
             </div>
@@ -177,7 +177,7 @@ const Auth = () => {
                   placeholder="First Name"
                   value={form.firstName}
                   onChange={(e) => handleChange('firstName', e.target.value)}
-                  className={`p-2 rounded border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-400`}
+                  className={`input-primary ${errors.firstName ? 'border-red-500' : 'border-gray-300'} `}
                 />
                 {errors.firstName && <span className="text-red-500 text-sm mt-1">{errors.firstName}</span>}
               </div>
@@ -190,7 +190,7 @@ const Auth = () => {
                   placeholder="Last Name (Optional)"
                   value={form.lastName}
                   onChange={(e) => handleChange('lastName', e.target.value)}
-                  className="p-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="input-primary border-gray-300 "
                 />
               </div>
             )}
@@ -201,7 +201,7 @@ const Auth = () => {
                 placeholder="Password"
                 value={form.password}
                 onChange={(e) => handleChange('password', e.target.value)}
-                className={`p-2 rounded border ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-400 pr-10`}
+                className={`input-primary ${errors.password ? 'border-red-500' : 'border-gray-300'}  pr-10`}
               />
               <div
                 className="absolute right-2 top-2 cursor-pointer w-6 h-6 text-gray-600"
@@ -219,7 +219,7 @@ const Auth = () => {
                   placeholder="Confirm Password"
                   value={form.confirmPassword}
                   onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                  className={`p-2 rounded border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-400 pr-10`}
+                  className={`input-primary ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}  pr-10`}
                 />
                 <div
                   className="absolute right-2 top-2 cursor-pointer w-6 h-6 text-gray-600"
