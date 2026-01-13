@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useGetUserByIdQuery, useCreateUserMutation, useUpdateUserMutation } from '../../app/store/api/usersApi';
 import Loader from '../loader/Loader';
 import { useAppSelector } from '../../app/store/hooks';
-
-type FeatureType = 'product' | 'user' | 'order';
+import { CollectionConfig, collectionRegistry } from './collectionRegistry';
 
 interface CollectionEditorProps {
   id?: string;
   mode: 'edit' | 'create';
-  featureType: FeatureType;
+  featureType: string;
 }
 
 const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureType }) => {
@@ -19,26 +17,43 @@ const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureTy
   const [formData, setFormData] = useState<any>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const { data: userData, isLoading: userLoading } = useGetUserByIdQuery(id || '', {
-    skip: featureType !== 'user' || mode !== 'edit' || !id,
-  });
-  const [createUser, { isLoading: creatingUser }] = useCreateUserMutation();
-  const [updateUser, { isLoading: updatingUser }] = useUpdateUserMutation();
+  const collectionConfig: CollectionConfig | undefined = collectionRegistry[featureType];
 
-  const isLoading = userLoading;
-  const isSaving = creatingUser || updatingUser;
+  if (!collectionConfig) {
+    return (
+    <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="bg-neutral relative z-0 p-4 flex flex-8 sup-min-nav text-red-500"
+        >
+          Collection "{featureType}" is not registered.
+    </motion.div>);
+  }
+
+  const { api, schema } = collectionConfig;
+
+  const { data: itemData, isLoading: loadingItem } = api.useGetById(id || '', {
+    skip: mode !== 'edit' || !id,
+  });
+  const [createItem, { isLoading: creating }] = api.useCreate();
+  const [updateItem, { isLoading: updating }] = api.useUpdate();
+
+  const isLoading = loadingItem;
+  const isSaving = creating || updating;
 
   useEffect(() => {
-    if (mode === 'edit') {
-      if (featureType === 'user' && userData) {
-        setFormData(userData);
-      }
-    } else {
-      if (featureType === 'user') {
-        setFormData({ firstName: '', lastName: '', email: '', password: '', type: 'user' });
-      } 
+    if (mode === 'edit' && itemData) {
+      setFormData(itemData);
+    } else if (mode === 'create') {
+      const initialData: any = {};
+      schema.fields.forEach((f) => {
+        initialData[f.name] = '';
+      });
+      setFormData(initialData);
     }
-  }, [mode, featureType, userData]);
+  }, [mode, itemData, schema.fields]);
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
@@ -49,14 +64,14 @@ const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureTy
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-
-    if (featureType === 'user') {
-      if (!formData.firstName?.trim()) newErrors.firstName = 'First name is required';
-      if (!formData.lastName?.trim()) newErrors.lastName = 'Last name is required';
-      if (!formData.email?.trim()) newErrors.email = 'Email is required';
-      if (mode === 'create' && !formData.password?.trim()) newErrors.password = 'Password is required';
-    } 
-
+    schema.fields.forEach((f) => {
+      if (f.required && !formData[f.name]?.toString().trim()) {
+        newErrors[f.name] = `${f.name.charAt(0).toUpperCase() + f.name.slice(1)} is required`;
+      }
+      if (f.enum && !f.enum.includes(formData[f.name])) {
+        newErrors[f.name] = `Invalid value for ${f.name}`;
+      }
+    });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -66,12 +81,10 @@ const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureTy
     if (!validate()) return;
 
     try {
-      if (featureType === 'user') {
-        if (mode === 'create') {
-          await createUser(formData).unwrap();
-        } else if (id) {
-          await updateUser({ id, data: formData }).unwrap();
-        }
+      if (mode === 'create') {
+        await createItem(formData).unwrap();
+      } else if (id) {
+        await updateItem({ id, data: formData }).unwrap();
       }
       navigate(`/admin-${featureType}`);
     } catch (err) {
@@ -79,9 +92,7 @@ const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureTy
     }
   };
 
-  const handleCancel = () => {
-    navigate(`/admin-${featureType}`);
-  };
+  const handleCancel = () => navigate(`/admin-${featureType}`);
 
   if (isLoading) return <Loader />;
 
@@ -98,99 +109,62 @@ const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureTy
           {mode === 'create' ? 'Create' : 'Edit'} {featureType.charAt(0).toUpperCase() + featureType.slice(1)}
         </h1>
 
-        <div className="space-y-6 bg-neutral3 p-6 rounded-lg">
-          {featureType === 'user' && (
-            <>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-contrast mb-2">First Name *</label>
-                  <input
-                    type="text"
-                    value={formData.firstName || ''}
-                    onChange={(e) => handleChange('firstName', e.target.value)}
-                    className="w-full input-primary"
-                  />
-                  {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
+        <form className="space-y-6 bg-neutral3 p-6 rounded-lg" onSubmit={handleSubmit}>
+          {schema.fields.map((field) => {
+            const isDisabled = field.name === 'type' && user?.type !== 'admin';
+            const commonProps = {
+              value: formData[field.name] || '',
+              onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+                handleChange(field.name, e.target.value),
+              className: `w-full ${isDisabled ? 'input-disabled' : 'input-primary'}`,
+              disabled: isDisabled,
+            };
+
+            if (field.enum) {
+              return (
+                <div key={field.name}>
+                  <label className="block text-sm font-medium text-neutral-contrast mb-2">
+                    {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+                  </label>
+                  <select {...commonProps}>
+                    {field.enum.map((val) => (
+                      <option key={val} value={val}>
+                        {val.charAt(0).toUpperCase() + val.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                  {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
                 </div>
+              );
+            }
 
-                <div>
-                  <label className="block text-sm font-medium text-neutral-contrast mb-2">Last Name *</label>
-                  <input
-                    type="text"
-                    value={formData.lastName || ''}
-                    onChange={(e) => handleChange('lastName', e.target.value)}
-                    className="w-full input-primary"
-                  />
-                  {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
-                </div>
+            let inputType: string = 'text';
+            if (field.type === 'Number') inputType = 'number';
+            else if (field.type === 'Boolean') inputType = 'checkbox';
+            else if (field.name.toLowerCase().includes('password')) inputType = 'password';
+            else if (field.name.toLowerCase().includes('email')) inputType = 'email';
+
+            return (
+              <div key={field.name}>
+                <label className="block text-sm font-medium text-neutral-contrast mb-2">
+                  {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+                  {field.required && ' *'}
+                </label>
+                <input {...commonProps} type={inputType} checked={inputType === 'checkbox' ? formData[field.name] : undefined} />
+                {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-contrast mb-2">Email *</label>
-                <input
-                  type="email"
-                  value={formData.email || ''}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  className="w-full input-primary"
-                />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-              </div>
-
-              {mode === 'create' && (
-                <div>
-                  <label className="block text-sm font-medium text-neutral-contrast mb-2">Password *</label>
-                  <input
-                    type="password"
-                    value={formData.password || ''}
-                    onChange={(e) => handleChange('password', e.target.value)}
-                    className="w-full input-primary"
-                  />
-                  {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-contrast mb-2">User Type</label>
-                <select
-                  value={formData.type || 'user'}
-                  onChange={(e) => handleChange('type', e.target.value)}
-                  className={`w-full ${user?.type !== 'admin' ? "input-disabled" : "input-primary"}`}
-                  disabled={user?.type !== 'admin'}
-                >
-                  <option value="user">User</option>
-                  <option value="editor">Editor</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-contrast mb-2">Profile Image URL</label>
-                <input
-                  type="text"
-                  value={formData.profileImage || ''}
-                  onChange={(e) => handleChange('profileImage', e.target.value)}
-                  className="w-full input-primary"
-                />
-              </div>
-            </>
-          )}
+            );
+          })}
 
           <div className="flex gap-4 pt-4">
-            <button
-              onClick={handleCancel}
-              className="btn-gray"
-            >
+            <button type="button" onClick={handleCancel} className="btn-gray">
               Cancel
             </button>
-            <button
-              onClick={handleSubmit}
-              disabled={isSaving}
-              className="btn-primary"
-            >
+            <button type="submit" disabled={isSaving} className="btn-primary">
               {isSaving ? 'Saving...' : mode === 'create' ? 'Create' : 'Save Changes'}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </motion.div>
   );
