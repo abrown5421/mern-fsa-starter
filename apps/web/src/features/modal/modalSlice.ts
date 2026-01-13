@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ModalProps } from './modalTypes';
+import { ModalState, OpenModalPayload } from './modalTypes';
 
-const initialState: ModalProps = {
+const initialState: ModalState = {
   open: false,
   modalContent: '',
   title: '',
@@ -9,14 +9,14 @@ const initialState: ModalProps = {
   confirmAction: undefined,
   cancelAction: undefined,
   confirmText: 'Confirm',
-  cancelText: 'Cancel'
+  cancelText: 'Cancel',
 };
 
 const modalSlice = createSlice({
   name: 'modal',
   initialState,
   reducers: {
-    openModal: (state, action: PayloadAction<ModalProps>) => {
+    openModal: (state, action: PayloadAction<OpenModalPayload>) => {
       state.open = true;
       Object.assign(state, action.payload);
     },

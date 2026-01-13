@@ -89,6 +89,11 @@ html, body {
   overflow: scroll;
 }
 
+.minus-drawer {
+  height: calc(100vh - 94px);
+  overflow: scroll;
+}
+
 .sup-min-nav {
   min-height: calc(100vh - 56px);
 }
