@@ -10,10 +10,10 @@ import { generateTypeDefinitions } from "./templates/typeTemplate.js";
 import { generateCmsPage } from "./templates/generateCmsPage.js";
 import { updateServerFile } from "./updateServerFile.js";
 import { updateBaseApi } from "./updateBaseApi.js";
-import prettier from "prettier";
-import { updateCollectionEditor } from "./templates/updateCollectionEditor.js";
 import { updateAdminSidebar } from "./templates/updateAdminSidebar.js";
 import { updateAppRoutes } from "./templates/updateAppRoutes.js";
+import { registerCollection, FeatureSchema } from "./registerCollection.js"; 
+import prettier from "prettier";
 
 type FieldType =
   | "String"
@@ -34,11 +34,6 @@ interface FieldDefinition {
   ref?: string;
 }
 
-interface FeatureSchema {
-  name: string;
-  fields: FieldDefinition[];
-}
-
 function isPlural(word: string): boolean {
   const lower = word.toLowerCase();
   if (lower.endsWith("ies")) return true;
@@ -51,20 +46,13 @@ export async function addFeature() {
   console.log("\n Creating a new feature...\n");
 
   let featureName: string;
-
   while (true) {
     featureName = await input({
       message:
         'Enter feature name (PascalCase, singular — e.g. "Product", "BlogPost"):',
       validate: (value) => {
-        if (!isPascalCase(value)) {
-          return "Feature name must be PascalCase";
-        }
-
-        if (isPlural(value)) {
-          return 'Feature name must be singular (e.g. "Product", not "Products")';
-        }
-
+        if (!isPascalCase(value)) return "Feature name must be PascalCase";
+        if (isPlural(value)) return 'Feature name must be singular (e.g. "Product", not "Products")';
         return true;
       },
     });
@@ -86,19 +74,9 @@ export async function addFeature() {
   const apiFile = path.join(frontendFeatureDir, `${pluralCamelName}Api.ts`);
   const cmsPageDir = path.join(webSrc, "pages", `admin${featureName}`);
 
-  if (fs.existsSync(backendFeatureDir)) {
-    throw new Error(
-      `Backend feature "${featureName}" already exists at ${backendFeatureDir}`,
-    );
-  }
-
-  if (fs.existsSync(apiFile)) {
-    throw new Error(`Frontend API service for "${featureName}" already exists`);
-  }
-
-  if (fs.existsSync(cmsPageDir)) {
-    throw new Error(`CMS page for "${featureName}" already exists at ${cmsPageDir}`);
-  }
+  if (fs.existsSync(backendFeatureDir)) throw new Error(`Backend feature "${featureName}" already exists`);
+  if (fs.existsSync(apiFile)) throw new Error(`Frontend API service for "${featureName}" already exists`);
+  if (fs.existsSync(cmsPageDir)) throw new Error(`CMS page for "${featureName}" already exists`);
 
   const inputMethod = await select({
     message: "How would you like to define the feature schema?",
@@ -109,12 +87,8 @@ export async function addFeature() {
   });
 
   let schema: FeatureSchema;
-
-  if (inputMethod === "json") {
-    schema = await getSchemaFromJson(featureName);
-  } else {
-    schema = await getSchemaInteractively(featureName);
-  }
+  if (inputMethod === "json") schema = await getSchemaFromJson(featureName);
+  else schema = await getSchemaInteractively(featureName);
 
   const addTimestamps = await confirm({
     message: "Add createdAt and updatedAt timestamps?",
@@ -129,27 +103,30 @@ export async function addFeature() {
   console.log("\n📦 Generating files...\n");
 
   await generateBackendFiles(schema, addTimestamps, apiRoot);
-
   await generateFrontendFiles(schema);
-
   await updateBaseApi(featureName, webSrc);
-  
   await updateServerFile(camelName, pluralCamelName, apiRoot);
 
   if (addToCms) {
     console.log("\n Generating CMS interface...\n");
-    await generateCmsFiles(schema, webSrc);
+    const cmsPageDir = path.join(webSrc, "pages", `admin${featureName}`);
+    fs.mkdirSync(cmsPageDir, { recursive: true });
+    const cmsPageContent = generateCmsPage(schema);
+    const cmsPageFile = path.join(cmsPageDir, `Admin${featureName}.tsx`);
+    fs.writeFileSync(cmsPageFile, await prettier.format(cmsPageContent, { parser: "typescript" }));
+    console.log(` Created Admin${featureName}.tsx`);
+
+    await updateAppRoutes(featureName, webSrc);
+    await updateAdminSidebar(featureName, webSrc);
   }
 
+  await registerCollection(schema);
+
   console.log(`\n Feature "${featureName}" created successfully!`);
-  console.log(`\n Backend files created in: ${backendFeatureDir}`);
+  console.log(` Backend files created in: ${backendFeatureDir}`);
   console.log(` Frontend API service created: ${apiFile}`);
-  
-  if (addToCms) {
-    console.log(` CMS page created in: ${cmsPageDir}`);
-    console.log(`\n You can now access the CMS at: /admin-${camelName}`);
-  }
-  
+  if (addToCms) console.log(` CMS page created in: ${cmsPageDir}`);
+  console.log(`\n You can now access the CMS at: /admin-${camelName}`);
   console.log(`\n Server.ts has been updated with the new route`);
 }
 
@@ -161,12 +138,7 @@ async function getSchemaFromJson(featureName: string): Promise<FeatureSchema> {
         fields: [
           { name: "title", type: "String", required: true },
           { name: "price", type: "Number", required: true },
-          {
-            name: "inStock",
-            type: "Boolean",
-            required: false,
-            default: "true",
-          },
+          { name: "inStock", type: "Boolean", required: false, default: "true" },
         ],
       },
       null,
@@ -177,30 +149,18 @@ async function getSchemaFromJson(featureName: string): Promise<FeatureSchema> {
   const jsonInput = await input({
     message: "Paste your JSON schema:",
     validate: (value) => {
-      try {
-        JSON.parse(value);
-        return true;
-      } catch {
-        return "Invalid JSON format";
-      }
+      try { JSON.parse(value); return true; } 
+      catch { return "Invalid JSON format"; }
     },
   });
 
   const parsed = JSON.parse(jsonInput);
+  if (!parsed.fields || !Array.isArray(parsed.fields)) throw new Error('JSON must contain a "fields" array');
 
-  if (!parsed.fields || !Array.isArray(parsed.fields)) {
-    throw new Error('JSON must contain a "fields" array');
-  }
-
-  return {
-    name: featureName,
-    fields: parsed.fields,
-  };
+  return { name: featureName, fields: parsed.fields };
 }
 
-async function getSchemaInteractively(
-  featureName: string,
-): Promise<FeatureSchema> {
+async function getSchemaInteractively(featureName: string): Promise<FeatureSchema> {
   const fields: FieldDefinition[] = [];
   let addMore = true;
 
@@ -225,93 +185,43 @@ async function getSchemaInteractively(
       ],
     });
 
-    const required = await confirm({
-      message: "Is this field required?",
-      default: false,
-    });
+    const required = await confirm({ message: "Is this field required?", default: false });
 
-    const field: FieldDefinition = {
-      name: fieldName,
-      type: fieldType,
-      required,
-    };
+    const field: FieldDefinition = { name: fieldName, type: fieldType, required };
 
     if (fieldType === "String") {
-      const isUnique = await confirm({
-        message: "Should this field be unique?",
-        default: false,
-      });
-      if (isUnique) field.unique = true;
-
-      const hasEnum = await confirm({
-        message: "Does this field have enum values?",
-        default: false,
-      });
-      if (hasEnum) {
-        const enumInput = await input({
-          message: "Enter enum values (comma-separated):",
-        });
+      if (await confirm({ message: "Should this field be unique?", default: false })) field.unique = true;
+      if (await confirm({ message: "Does this field have enum values?", default: false })) {
+        const enumInput = await input({ message: "Enter enum values (comma-separated):" });
         field.enum = enumInput.split(",").map((v) => v.trim());
       }
     }
 
-    if (fieldType === "ObjectId") {
-      const ref = await input({
-        message: 'Reference model name (e.g., "User"):',
-      });
-      field.ref = ref;
-    }
+    if (fieldType === "ObjectId") field.ref = await input({ message: 'Reference model name (e.g., "User"):' });
 
-    const hasDefault = await confirm({
-      message: "Set a default value?",
-      default: false,
-    });
-    if (hasDefault) {
-      field.default = await input({
-        message: "Default value:",
-      });
-    }
+    if (await confirm({ message: "Set a default value?", default: false })) field.default = await input({ message: "Default value:" });
 
     fields.push(field);
-
-    addMore = await confirm({
-      message: "Add another field?",
-      default: true,
-    });
+    addMore = await confirm({ message: "Add another field?", default: true });
   }
 
-  return {
-    name: featureName,
-    fields,
-  };
+  return { name: featureName, fields };
 }
 
-async function generateBackendFiles(
-  schema: FeatureSchema,
-  addTimestamps: boolean,
-  apiRoot: string,
-) {
+async function generateBackendFiles(schema: FeatureSchema, addTimestamps: boolean, apiRoot: string) {
   const camelName = toCamelCase(schema.name);
   const backendFeatureDir = path.join(apiRoot, "entities", camelName);
-
   fs.mkdirSync(backendFeatureDir, { recursive: true });
 
   const modelContent = generateModel(schema, addTimestamps);
-  const modelFile = path.join(backendFeatureDir, `${camelName}.model.ts`);
-  fs.writeFileSync(
-    modelFile,
-    await prettier.format(modelContent, { parser: "typescript" }),
-  );
-  console.log(` Created ${camelName}.model.ts`);
+  fs.writeFileSync(path.join(backendFeatureDir, `${camelName}.model.ts`), await prettier.format(modelContent, { parser: "typescript" }));
 
   const routeContent = generateRoute(schema);
   const routeDir = path.join(apiRoot, "routes");
   const routeFile = path.join(routeDir, `${camelName}s.routes.ts`);
-  fs.writeFileSync(
-    routeFile,
-    await prettier.format(routeContent, { parser: "typescript" }),
-  );
-  console.log(` Created ${camelName}s.routes.ts`);
+  fs.writeFileSync(routeFile, await prettier.format(routeContent, { parser: "typescript" }));
+
+  console.log(` Created backend files for ${camelName}`);
 }
 
 async function generateFrontendFiles(schema: FeatureSchema) {
@@ -319,46 +229,13 @@ async function generateFrontendFiles(schema: FeatureSchema) {
   const pluralCamelName = `${camelName}s`;
 
   const typesDir = path.join(webSrc, "types");
-  if (!fs.existsSync(typesDir)) {
-    fs.mkdirSync(typesDir, { recursive: true });
-  }
-
+  if (!fs.existsSync(typesDir)) fs.mkdirSync(typesDir, { recursive: true });
   const typeContent = generateTypeDefinitions(schema);
-  const typeFile = path.join(typesDir, `${camelName}.types.ts`);
-  fs.writeFileSync(
-    typeFile,
-    await prettier.format(typeContent, { parser: "typescript" }),
-  );
-  console.log(` Created ${camelName}.types.ts`);
+  fs.writeFileSync(path.join(typesDir, `${camelName}.types.ts`), await prettier.format(typeContent, { parser: "typescript" }));
 
-  const apiContent = generateApiService(schema);
   const apiDir = path.join(webSrc, "app", "store", "api");
-  const apiFile = path.join(apiDir, `${pluralCamelName}Api.ts`);
-  fs.writeFileSync(
-    apiFile,
-    await prettier.format(apiContent, { parser: "typescript" }),
-  );
-  console.log(` Created ${pluralCamelName}Api.ts`);
-}
+  const apiContent = generateApiService(schema);
+  fs.writeFileSync(path.join(apiDir, `${pluralCamelName}Api.ts`), await prettier.format(apiContent, { parser: "typescript" }));
 
-async function generateCmsFiles(schema: FeatureSchema, webSrc: string) {
-  const camelName = toCamelCase(schema.name);
-  const capitalizedName = schema.name;
-  
-  const cmsPageDir = path.join(webSrc, "pages", `admin${capitalizedName}`);
-  fs.mkdirSync(cmsPageDir, { recursive: true });
-
-  const cmsPageContent = generateCmsPage(schema);
-  const cmsPageFile = path.join(cmsPageDir, `Admin${capitalizedName}.tsx`);
-  fs.writeFileSync(
-    cmsPageFile,
-    await prettier.format(cmsPageContent, { parser: "typescript" }),
-  );
-  console.log(` Created Admin${capitalizedName}.tsx`);
-
-  await updateCollectionEditor(schema, webSrc);
-
-  await updateAppRoutes(capitalizedName, webSrc); 
-
-  await updateAdminSidebar(capitalizedName, webSrc);
+  console.log(` Created frontend files for ${pluralCamelName}`);
 }
