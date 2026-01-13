@@ -7,9 +7,13 @@ import { generateModel } from "./templates/modelTemplate.js";
 import { generateRoute } from "./templates/routeTemplate.js";
 import { generateApiService } from "./templates/apiServiceTemplate.js";
 import { generateTypeDefinitions } from "./templates/typeTemplate.js";
+import { generateCmsPage } from "./templates/generateCmsPage.js";
 import { updateServerFile } from "./updateServerFile.js";
 import { updateBaseApi } from "./updateBaseApi.js";
 import prettier from "prettier";
+import { updateCollectionEditor } from "./templates/updateCollectionEditor.js";
+import { updateAdminSidebar } from "./templates/updateAdminSidebar.js";
+import { updateAppRoutes } from "./templates/updateAppRoutes.js";
 
 type FieldType =
   | "String"
@@ -80,6 +84,7 @@ export async function addFeature() {
   const backendFeatureDir = path.join(apiRoot, "entities", camelName);
   const frontendFeatureDir = path.join(webSrc, "app", "store", "api");
   const apiFile = path.join(frontendFeatureDir, `${pluralCamelName}Api.ts`);
+  const cmsPageDir = path.join(webSrc, "pages", `admin${featureName}`);
 
   if (fs.existsSync(backendFeatureDir)) {
     throw new Error(
@@ -89,6 +94,10 @@ export async function addFeature() {
 
   if (fs.existsSync(apiFile)) {
     throw new Error(`Frontend API service for "${featureName}" already exists`);
+  }
+
+  if (fs.existsSync(cmsPageDir)) {
+    throw new Error(`CMS page for "${featureName}" already exists at ${cmsPageDir}`);
   }
 
   const inputMethod = await select({
@@ -112,7 +121,12 @@ export async function addFeature() {
     default: true,
   });
 
-  console.log("\n Generating files...\n");
+  const addToCms = await confirm({
+    message: "Add CMS interface for this feature?",
+    default: true,
+  });
+
+  console.log("\n📦 Generating files...\n");
 
   await generateBackendFiles(schema, addTimestamps, apiRoot);
 
@@ -122,9 +136,20 @@ export async function addFeature() {
   
   await updateServerFile(camelName, pluralCamelName, apiRoot);
 
+  if (addToCms) {
+    console.log("\n Generating CMS interface...\n");
+    await generateCmsFiles(schema, webSrc);
+  }
+
   console.log(`\n Feature "${featureName}" created successfully!`);
   console.log(`\n Backend files created in: ${backendFeatureDir}`);
   console.log(` Frontend API service created: ${apiFile}`);
+  
+  if (addToCms) {
+    console.log(` CMS page created in: ${cmsPageDir}`);
+    console.log(`\n You can now access the CMS at: /admin-${camelName}`);
+  }
+  
   console.log(`\n Server.ts has been updated with the new route`);
 }
 
@@ -179,7 +204,7 @@ async function getSchemaInteractively(
   const fields: FieldDefinition[] = [];
   let addMore = true;
 
-  console.log("\n📋 Define your fields (you can add multiple):\n");
+  console.log("\n Define your fields (you can add multiple):\n");
 
   while (addMore) {
     const fieldName = await input({
@@ -277,7 +302,7 @@ async function generateBackendFiles(
     modelFile,
     await prettier.format(modelContent, { parser: "typescript" }),
   );
-  console.log(`✓ Created ${camelName}.model.ts`);
+  console.log(` Created ${camelName}.model.ts`);
 
   const routeContent = generateRoute(schema);
   const routeDir = path.join(apiRoot, "routes");
@@ -286,7 +311,7 @@ async function generateBackendFiles(
     routeFile,
     await prettier.format(routeContent, { parser: "typescript" }),
   );
-  console.log(`✓ Created ${camelName}s.routes.ts`);
+  console.log(` Created ${camelName}s.routes.ts`);
 }
 
 async function generateFrontendFiles(schema: FeatureSchema) {
@@ -304,7 +329,7 @@ async function generateFrontendFiles(schema: FeatureSchema) {
     typeFile,
     await prettier.format(typeContent, { parser: "typescript" }),
   );
-  console.log(`✓ Created ${camelName}.types.ts`);
+  console.log(` Created ${camelName}.types.ts`);
 
   const apiContent = generateApiService(schema);
   const apiDir = path.join(webSrc, "app", "store", "api");
@@ -313,5 +338,27 @@ async function generateFrontendFiles(schema: FeatureSchema) {
     apiFile,
     await prettier.format(apiContent, { parser: "typescript" }),
   );
-  console.log(`✓ Created ${pluralCamelName}Api.ts`);
+  console.log(` Created ${pluralCamelName}Api.ts`);
+}
+
+async function generateCmsFiles(schema: FeatureSchema, webSrc: string) {
+  const camelName = toCamelCase(schema.name);
+  const capitalizedName = schema.name;
+  
+  const cmsPageDir = path.join(webSrc, "pages", `admin${capitalizedName}`);
+  fs.mkdirSync(cmsPageDir, { recursive: true });
+
+  const cmsPageContent = generateCmsPage(schema);
+  const cmsPageFile = path.join(cmsPageDir, `Admin${capitalizedName}.tsx`);
+  fs.writeFileSync(
+    cmsPageFile,
+    await prettier.format(cmsPageContent, { parser: "typescript" }),
+  );
+  console.log(` Created Admin${capitalizedName}.tsx`);
+
+  await updateCollectionEditor(schema, webSrc);
+
+  await updateAppRoutes(capitalizedName, webSrc); 
+
+  await updateAdminSidebar(capitalizedName, webSrc);
 }

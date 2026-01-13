@@ -45,5 +45,5 @@ export async function removeFromBaseApi(featureName: string, webSrc: string) {
   });
 
   fs.writeFileSync(baseApiFile, formatted);
-  console.log(`✓ Removed '${featureName}' from tagTypes in baseApi.ts`);
+  console.log(` Removed '${featureName}' from tagTypes in baseApi.ts`);
 }
