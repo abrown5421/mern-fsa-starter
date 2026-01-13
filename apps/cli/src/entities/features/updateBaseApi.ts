@@ -41,5 +41,5 @@ export async function updateBaseApi(featureName: string, webSrc: string) {
   });
 
   fs.writeFileSync(baseApiFile, formatted);
-  console.log(`✓ Added '${featureName}' to tagTypes in baseApi.ts`);
+  console.log(` Added '${featureName}' to tagTypes in baseApi.ts`);
 }

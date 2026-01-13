@@ -48,5 +48,5 @@ export async function removeFromServerFile(
   });
 
   fs.writeFileSync(serverFile, formatted);
-  console.log(`✓ Removed '${camelName}' route from server.ts`);
+  console.log(` Removed '${camelName}' route from server.ts`);
 }
