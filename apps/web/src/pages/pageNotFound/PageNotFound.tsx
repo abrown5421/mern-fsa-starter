@@ -10,7 +10,7 @@ const PageNotFound = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-neutral sup-min-nav relative z-0 p-4 flex flex-col justify-center items-center"
+      className="bg-neutral sup-min-nav relative z-0 p-4 flex  flex-8 flex-col justify-center items-center"
     >
       <div className='text-primary text-9xl font-primary my-2'>404</div>
       <div className='my-4'>
@@ -24,7 +24,7 @@ const PageNotFound = () => {
 
       <button
         onClick={() => navigate('/')}
-        className="btn-primary"
+        className="btn-primary max-w-xs"
       >
         Go Home
       </button>
