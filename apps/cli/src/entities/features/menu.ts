@@ -1,6 +1,6 @@
 import { showMenu } from "../../shared/menu.js";
 import { addFeature } from "./addFeature.js";
-import { deleteFeature } from "./deleteFeatures.js";
+import { deleteFeature } from "./deleteFeature.js";
 
 export async function featuresMenu() {
   let back = false;
