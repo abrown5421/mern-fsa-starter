@@ -6,11 +6,13 @@ import { pagesDir } from '../../shared/paths.js';
 import { pageTemplate } from './templates/pageTemplate.js';
 import { updateAppRoutes } from './updateAppRoutes.js';
 import { updateNavbar } from './updateNavbar.js';
+import { templates } from './templates/templateRegistry.js';
 
 export type AddPageOptions = {
   pageName?: string;
   routePath?: string;
   addToNavbar?: boolean;
+  template?: (pageName: string) => string; 
 };
 
 export async function addPage(options: AddPageOptions = {}) {
@@ -46,7 +48,8 @@ export async function addPage(options: AddPageOptions = {}) {
   }
 
   fs.mkdirSync(pageFolder, { recursive: true });
-  fs.writeFileSync(pageFile, pageTemplate(pageName));
+  const templateFn = options.template ?? templates.default;
+  fs.writeFileSync(pageFile, templateFn(pageName));
 
   await updateAppRoutes({
     pageName,
@@ -61,4 +64,3 @@ export async function addPage(options: AddPageOptions = {}) {
 
   console.log(`Page "${pageName}" created at ${routePath}`);
 }
-
