@@ -1,4 +1,4 @@
-import { toCamelCase } from "../../../shared/case.js";
+import { toCamelCase } from "../../shared/case.js";
 
 interface FieldDefinition {
   name: string;
