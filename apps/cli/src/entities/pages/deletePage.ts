@@ -9,11 +9,17 @@ const appFile = path.join(webSrc, 'App.tsx');
 const navbarFile = path.join(webSrc, 'features/navbar/Navbar.tsx');
 const drawerFile = path.join(webSrc, 'features/navbar/NavbarDrawer.tsx');
 
-export async function deletePage() {
-  const pageName = await input({
-    message: 'Enter the page name to delete (PascalCase):',
-    validate: (value) => value.length > 0 || 'Page name cannot be empty',
-  });
+export type DeletePageOptions = {
+  pageName?: string;
+};
+
+export async function deletePage(options: DeletePageOptions = {}) {
+  const pageName =
+    options.pageName ??
+    (await input({
+      message: 'Enter the page name to delete (PascalCase):',
+      validate: (value) => value.length > 0 || 'Page name cannot be empty',
+    }));
 
   const camelName = toCamelCase(pageName);
   const pageFolder = path.join(pagesDir, camelName);
@@ -32,6 +38,7 @@ export async function deletePage() {
     `<Route\\s+path=["']([^"']+)["']\\s+element=\\{<${pageName}[^>]*>?\\}\\s*\\/>`,
     'g'
   );
+
   const routeMatch = routePathRegex.exec(appContent);
   const routePath = routeMatch ? routeMatch[1] : null;
 
@@ -53,23 +60,34 @@ export async function deletePage() {
   );
   appContent = appContent.replace(routeRemovalRegex, '');
 
-  fs.writeFileSync(appFile, await prettier.format(appContent, { parser: 'typescript' }));
+  fs.writeFileSync(
+    appFile,
+    await prettier.format(appContent, { parser: 'typescript' })
+  );
   console.log(`Removed ${pageName} from App.tsx`);
 
-  if (routePath) {
-    let navContent = fs.readFileSync(navbarFile, 'utf-8');
-    navContent = removeLinksByPath(navContent, routePath);
-    fs.writeFileSync(navbarFile, await prettier.format(navContent, { parser: 'typescript' }));
-
-    let drawerContent = fs.readFileSync(drawerFile, 'utf-8');
-    drawerContent = removeLinksByPath(drawerContent, routePath);
-    fs.writeFileSync(drawerFile, await prettier.format(drawerContent, { parser: 'typescript' }));
-
-    console.log(`Removed ${pageName} links from Navbar files`);
-  } else {
+  if (!routePath) {
     console.log('Skipping navbar link removal (no route path found)');
+    return;
   }
+
+  let navContent = fs.readFileSync(navbarFile, 'utf-8');
+  navContent = removeLinksByPath(navContent, routePath);
+  fs.writeFileSync(
+    navbarFile,
+    await prettier.format(navContent, { parser: 'typescript' })
+  );
+
+  let drawerContent = fs.readFileSync(drawerFile, 'utf-8');
+  drawerContent = removeLinksByPath(drawerContent, routePath);
+  fs.writeFileSync(
+    drawerFile,
+    await prettier.format(drawerContent, { parser: 'typescript' })
+  );
+
+  console.log(`Removed ${pageName} links from Navbar files`);
 }
+
 
 function removeLinksByPath(content: string, routePath: string): string {
   const lines = content.split('\n');

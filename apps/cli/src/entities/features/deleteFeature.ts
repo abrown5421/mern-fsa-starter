@@ -9,22 +9,25 @@ import { removeFromBaseApi } from "./updateBaseApi.js";
 import { removeFromServerFile } from "./updateServerFile.js";
 import { unregisterCollection } from "./registerCollection.js";
 
-export async function deleteFeature() {
+export type DeleteFeatureOptions = {
+  featureName?: string;
+  skipConfirm?: boolean;
+};
+
+export async function deleteFeature(options: DeleteFeatureOptions = {}) {
   console.log("\n🗑️  Deleting a feature...\n");
 
   const apiRoot = path.join(repoRoot, "apps/api/src");
   const entitiesDir = path.join(apiRoot, "entities");
-  
+
   let existingFeatures: string[] = [];
   if (fs.existsSync(entitiesDir)) {
-    existingFeatures = fs.readdirSync(entitiesDir)
-      .filter(item => {
-        const itemPath = path.join(entitiesDir, item);
-        return fs.statSync(itemPath).isDirectory();
-      })
-      .map(dir => {
-        return dir.charAt(0).toUpperCase() + dir.slice(1);
-      });
+    existingFeatures = fs
+      .readdirSync(entitiesDir)
+      .filter((item) =>
+        fs.statSync(path.join(entitiesDir, item)).isDirectory()
+      )
+      .map((dir) => dir.charAt(0).toUpperCase() + dir.slice(1));
   }
 
   if (existingFeatures.length === 0) {
@@ -32,39 +35,57 @@ export async function deleteFeature() {
     return;
   }
 
-  let featureName: string;
+  const featureName =
+    options.featureName ??
+    (await (async () => {
+      const selectionMethod = await select({
+        message: "How would you like to select the feature to delete?",
+        choices: [
+          { name: "Choose from list", value: "list" },
+          { name: "Enter manually", value: "manual" },
+        ],
+      });
 
-  const selectionMethod = await select({
-    message: "How would you like to select the feature to delete?",
-    choices: [
-      { name: "Choose from list", value: "list" },
-      { name: "Enter manually", value: "manual" },
-    ],
-  });
+      if (selectionMethod === "list") {
+        return await select({
+          message: "Select feature to delete:",
+          choices: existingFeatures.map((f) => ({
+            name: f,
+            value: f,
+          })),
+        });
+      }
 
-  if (selectionMethod === "list") {
-    featureName = await select({
-      message: "Select feature to delete:",
-      choices: existingFeatures.map(f => ({ name: f, value: f })),
-    });
-  } else {
-    featureName = await input({
-      message: 'Enter feature name to delete (PascalCase, e.g. "Product"):',
-      validate: (value) => {
-        if (!isPascalCase(value)) return "Feature name must be PascalCase";
-        return true;
-      },
-    });
-  }
+      return await input({
+        message:
+          'Enter feature name to delete (PascalCase, e.g. "Product"):',
+        validate: (value) =>
+          isPascalCase(value) || "Feature name must be PascalCase",
+      });
+    })());
 
   const camelName = toCamelCase(featureName);
   const pluralCamelName = `${camelName}s`;
 
   const backendFeatureDir = path.join(apiRoot, "entities", camelName);
-  const frontendApiFile = path.join(webSrc, "app", "store", "api", `${pluralCamelName}Api.ts`);
-  const frontendTypesFile = path.join(webSrc, "types", `${camelName}.types.ts`);
+  const frontendApiFile = path.join(
+    webSrc,
+    "app",
+    "store",
+    "api",
+    `${pluralCamelName}Api.ts`
+  );
+  const frontendTypesFile = path.join(
+    webSrc,
+    "types",
+    `${camelName}.types.ts`
+  );
   const cmsPageDir = path.join(webSrc, "pages", `admin${featureName}`);
-  const routeFile = path.join(apiRoot, "routes", `${pluralCamelName}.routes.ts`);
+  const routeFile = path.join(
+    apiRoot,
+    "routes",
+    `${pluralCamelName}.routes.ts`
+  );
 
   const checks = {
     backend: fs.existsSync(backendFeatureDir),
@@ -74,7 +95,7 @@ export async function deleteFeature() {
     cms: fs.existsSync(cmsPageDir),
   };
 
-  if (!checks.backend && !checks.route && !checks.frontendApi && !checks.frontendTypes && !checks.cms) {
+  if (!Object.values(checks).some(Boolean)) {
     console.log(`  Feature "${featureName}" does not appear to exist`);
     return;
   }
@@ -83,7 +104,8 @@ export async function deleteFeature() {
   if (checks.backend) console.log(`  Backend entity: ${backendFeatureDir}`);
   if (checks.route) console.log(`  Backend route: ${routeFile}`);
   if (checks.frontendApi) console.log(`  Frontend API: ${frontendApiFile}`);
-  if (checks.frontendTypes) console.log(`  Frontend types: ${frontendTypesFile}`);
+  if (checks.frontendTypes)
+    console.log(`  Frontend types: ${frontendTypesFile}`);
   if (checks.cms) console.log(`  CMS page: ${cmsPageDir}`);
   console.log(`  Server.ts route registration`);
   console.log(`  BaseApi tag type`);
@@ -91,77 +113,58 @@ export async function deleteFeature() {
   console.log(`  AdminSidebar link`);
   console.log(`  Collection registry entry`);
 
-  const confirmDelete = await confirm({
-    message: `Are you sure you want to delete feature "${featureName}"? This cannot be undone.`,
-    default: false,
-  });
+  if (!options.skipConfirm) {
+    const confirmDelete = await confirm({
+      message: `Are you sure you want to delete feature "${featureName}"? This cannot be undone.`,
+      default: false,
+    });
 
-  if (!confirmDelete) {
-    console.log("\n  Deletion cancelled");
-    return;
+    if (!confirmDelete) {
+      console.log("\n  Deletion cancelled");
+      return;
+    }
   }
 
   console.log("\n🗑️  Deleting files and updating references...\n");
 
-  if (checks.backend) {
-    fs.rmSync(backendFeatureDir, { recursive: true, force: true });
-    console.log(`Deleted backend entity directory`);
-  }
+  if (checks.backend) fs.rmSync(backendFeatureDir, { recursive: true, force: true });
+  if (checks.route) fs.unlinkSync(routeFile);
+  if (checks.frontendApi) fs.unlinkSync(frontendApiFile);
+  if (checks.frontendTypes) fs.unlinkSync(frontendTypesFile);
+  if (checks.cms) fs.rmSync(cmsPageDir, { recursive: true, force: true });
 
-  if (checks.route) {
-    fs.unlinkSync(routeFile);
-    console.log(`Deleted route file`);
-  }
+  const safe = async (label: string, fn: () => Promise<void>) => {
+    try {
+      await fn();
+      console.log(label);
+    } catch (err) {
+      console.log(
+        `${label} failed: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
+    }
+  };
 
-  if (checks.frontendApi) {
-    fs.unlinkSync(frontendApiFile);
-    console.log(`Deleted frontend API service`);
-  }
+  await safe("Removed route from server.ts", () =>
+    removeFromServerFile(camelName, pluralCamelName, apiRoot)
+  );
 
-  if (checks.frontendTypes) {
-    fs.unlinkSync(frontendTypesFile);
-    console.log(`Deleted frontend types`);
-  }
+  await safe("Removed tag type from baseApi.ts", () =>
+    removeFromBaseApi(featureName, webSrc)
+  );
 
-  if (checks.cms) {
-    fs.rmSync(cmsPageDir, { recursive: true, force: true });
-    console.log(`Deleted CMS page directory`);
-  }
+  await safe("Removed routes from App.tsx", () =>
+    removeAppRoutes(featureName, webSrc)
+  );
 
-  try {
-    await removeFromServerFile(camelName, pluralCamelName, apiRoot);
-    console.log(`Removed route from server.ts`);
-  } catch (error) {
-    console.log(`Could not update server.ts: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
+  await safe("Removed link from AdminSidebar.tsx", () =>
+    removeAdminSidebarLink(featureName, webSrc)
+  );
 
-  try {
-    await removeFromBaseApi(featureName, webSrc);
-    console.log(`Removed tag type from baseApi.ts`);
-  } catch (error) {
-    console.log(`Could not update baseApi.ts: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-
-  try {
-    await removeAppRoutes(featureName, webSrc);
-    console.log(`Removed routes from App.tsx`);
-  } catch (error) {
-    console.log(`Could not update App.tsx: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-
-  try {
-    await removeAdminSidebarLink(featureName, webSrc);
-    console.log(`Removed link from AdminSidebar.tsx`);
-  } catch (error) {
-    console.log(`Could not update AdminSidebar.tsx: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-
-  try {
-    await unregisterCollection(camelName, webSrc);
-    console.log(`Removed from collection registry`);
-  } catch (error) {
-    console.log(`Could not update collection registry: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
+  await safe("Removed from collection registry", () =>
+    unregisterCollection(camelName, webSrc)
+  );
 
   console.log(`\n Feature "${featureName}" has been successfully deleted!`);
 }

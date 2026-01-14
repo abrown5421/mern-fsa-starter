@@ -15,6 +15,14 @@ import { updateAppRoutes } from "./updateAppRoutes.js";
 import { registerCollection, FeatureSchema } from "./registerCollection.js"; 
 import prettier from "prettier";
 
+type AddFeatureOptions = {
+  featureName?: string;
+  schema?: FeatureSchema;
+  schemaInputMethod?: "interactive" | "json";
+  addTimestamps?: boolean;
+  addToCms?: boolean;
+};
+
 type FieldType =
   | "String"
   | "Number"
@@ -42,28 +50,32 @@ function isPlural(word: string): boolean {
   return false;
 }
 
-export async function addFeature() {
+export async function addFeature(options: AddFeatureOptions = {}) {
   console.log("\n Creating a new feature...\n");
 
-  let featureName: string;
-  while (true) {
-    featureName = await input({
-      message:
-        'Enter feature name (PascalCase, singular — e.g. "Product", "BlogPost"):',
-      validate: (value) => {
-        if (!isPascalCase(value)) return "Feature name must be PascalCase";
-        if (isPlural(value)) return 'Feature name must be singular (e.g. "Product", not "Products")';
-        return true;
-      },
-    });
+  const featureName =
+    options.featureName ??
+    (await (async () => {
+      while (true) {
+        const name = await input({
+          message:
+            'Enter feature name (PascalCase, singular — e.g. "Product"):',
+          validate: (value) => {
+            if (!isPascalCase(value)) return "Feature name must be PascalCase";
+            if (isPlural(value))
+              return 'Feature name must be singular (e.g. "Product")';
+            return true;
+          },
+        });
 
-    const confirmName = await confirm({
-      message: `Create feature "${featureName}"?`,
-      default: true,
-    });
+        const confirmName = await confirm({
+          message: `Create feature "${name}"?`,
+          default: true,
+        });
 
-    if (confirmName) break;
-  }
+        if (confirmName) return name;
+      }
+    })());
 
   const camelName = toCamelCase(featureName);
   const pluralCamelName = `${camelName}s`;
@@ -74,31 +86,44 @@ export async function addFeature() {
   const apiFile = path.join(frontendFeatureDir, `${pluralCamelName}Api.ts`);
   const cmsPageDir = path.join(webSrc, "pages", `admin${featureName}`);
 
-  if (fs.existsSync(backendFeatureDir)) throw new Error(`Backend feature "${featureName}" already exists`);
-  if (fs.existsSync(apiFile)) throw new Error(`Frontend API service for "${featureName}" already exists`);
-  if (fs.existsSync(cmsPageDir)) throw new Error(`CMS page for "${featureName}" already exists`);
+  if (fs.existsSync(backendFeatureDir))
+    throw new Error(`Backend feature "${featureName}" already exists`);
+  if (fs.existsSync(apiFile))
+    throw new Error(`Frontend API service already exists`);
+  if (fs.existsSync(cmsPageDir))
+    throw new Error(`CMS page already exists`);
 
-  const inputMethod = await select({
-    message: "How would you like to define the feature schema?",
-    choices: [
-      { name: "Interactive (step-by-step)", value: "interactive" },
-      { name: "JSON input", value: "json" },
-    ],
-  });
+  const schema =
+    options.schema ??
+    (await (async () => {
+      const inputMethod =
+        options.schemaInputMethod ??
+        (await select({
+          message: "How would you like to define the feature schema?",
+          choices: [
+            { name: "Interactive (step-by-step)", value: "interactive" },
+            { name: "JSON input", value: "json" },
+          ],
+        }));
 
-  let schema: FeatureSchema;
-  if (inputMethod === "json") schema = await getSchemaFromJson(featureName);
-  else schema = await getSchemaInteractively(featureName);
+      return inputMethod === "json"
+        ? await getSchemaFromJson(featureName)
+        : await getSchemaInteractively(featureName);
+    })());
 
-  const addTimestamps = await confirm({
-    message: "Add createdAt and updatedAt timestamps?",
-    default: true,
-  });
+  const addTimestamps =
+    options.addTimestamps ??
+    (await confirm({
+      message: "Add createdAt and updatedAt timestamps?",
+      default: true,
+    }));
 
-  const addToCms = await confirm({
-    message: "Add CMS interface for this feature?",
-    default: true,
-  });
+  const addToCms =
+    options.addToCms ??
+    (await confirm({
+      message: "Add CMS interface for this feature?",
+      default: true,
+    }));
 
   console.log("\n📦 Generating files...\n");
 
@@ -109,12 +134,14 @@ export async function addFeature() {
 
   if (addToCms) {
     console.log("\n Generating CMS interface...\n");
-    const cmsPageDir = path.join(webSrc, "pages", `admin${featureName}`);
+
     fs.mkdirSync(cmsPageDir, { recursive: true });
     const cmsPageContent = generateCmsPage(schema);
     const cmsPageFile = path.join(cmsPageDir, `Admin${featureName}.tsx`);
-    fs.writeFileSync(cmsPageFile, await prettier.format(cmsPageContent, { parser: "typescript" }));
-    console.log(` Created Admin${featureName}.tsx`);
+    fs.writeFileSync(
+      cmsPageFile,
+      await prettier.format(cmsPageContent, { parser: "typescript" })
+    );
 
     await updateAppRoutes(featureName, webSrc);
     await updateAdminSidebar(featureName, webSrc);
@@ -123,11 +150,10 @@ export async function addFeature() {
   await registerCollection(schema);
 
   console.log(`\n Feature "${featureName}" created successfully!`);
-  console.log(` Backend files created in: ${backendFeatureDir}`);
-  console.log(` Frontend API service created: ${apiFile}`);
-  if (addToCms) console.log(` CMS page created in: ${cmsPageDir}`);
-  console.log(`\n You can now access the CMS at: /admin-${camelName}`);
-  console.log(`\n Server.ts has been updated with the new route`);
+  console.log(` Backend: ${backendFeatureDir}`);
+  console.log(` Frontend API: ${apiFile}`);
+  if (addToCms) console.log(` CMS: ${cmsPageDir}`);
+  console.log(` CMS route: /admin-${camelName}`);
 }
 
 async function getSchemaFromJson(featureName: string): Promise<FeatureSchema> {
