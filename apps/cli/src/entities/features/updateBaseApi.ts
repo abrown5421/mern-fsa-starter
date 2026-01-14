@@ -43,3 +43,35 @@ export async function updateBaseApi(featureName: string, webSrc: string) {
   fs.writeFileSync(baseApiFile, formatted);
   console.log(` Added '${featureName}' to tagTypes in baseApi.ts`);
 }
+
+export async function removeFromBaseApi(featureName: string, webSrc: string) {
+  const baseApiFile = path.join(webSrc, 'app', 'store', 'api', 'baseApi.ts');
+  
+  if (!fs.existsSync(baseApiFile)) {
+    throw new Error(`baseApi.ts not found at ${baseApiFile}`);
+  }
+
+  let content = fs.readFileSync(baseApiFile, 'utf-8');
+
+  const tagTypesRegex = /tagTypes:\s*\[([\s\S]*?)\]/;
+  const match = content.match(tagTypesRegex);
+
+  if (!match) {
+    throw new Error('Could not find tagTypes array in baseApi.ts');
+  }
+
+  const existingTags = match[1];
+  
+  const tagPattern = new RegExp(`['"]${featureName}['"],?\\s*`, 'g');
+  const newTagsContent = existingTags.replace(tagPattern, '');
+  
+  const cleanedTags = newTagsContent.replace(/,(\s*)\]/g, '$1]').replace(/,(\s*),/g, ',');
+  
+  content = content.replace(tagTypesRegex, `tagTypes: [${cleanedTags}]`);
+
+  const formatted = await prettier.format(content, {
+    parser: 'typescript',
+  });
+
+  fs.writeFileSync(baseApiFile, formatted);
+}

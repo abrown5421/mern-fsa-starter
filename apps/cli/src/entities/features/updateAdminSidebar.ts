@@ -104,12 +104,12 @@ export async function removeAdminSidebarLink(
 
   let content = fs.readFileSync(sidebarFile, "utf-8");
 
-  const camelName =
-    featureName.charAt(0).toLowerCase() + featureName.slice(1);
+  const camelName = featureName.charAt(0).toLowerCase() + featureName.slice(1);
+  const pluralName = `${featureName}s`;
 
   const linkPattern = new RegExp(
-    `\\{[\\s\\S]*?url:\\s*"\\/admin-${camelName}",[\\s\\S]*?\\},?\\s*`,
-    "g"
+    `\\s*\\{\\s*title:\\s*["']${pluralName}["'],\\s*url:\\s*["']/admin-${camelName}["'],\\s*icon:\\s*<[^>]+>,?\\s*\\},?\\s*\n?`,
+    'g'
   );
 
   if (!linkPattern.test(content)) {
@@ -117,8 +117,11 @@ export async function removeAdminSidebarLink(
     return;
   }
 
-  content = content.replace(linkPattern, "");
-  content = content.replace(/,(\s*)\]/g, "$1]");
+  content = content.replace(linkPattern, '');
+  content = content.replace(/,(\s*),/g, ',');
+  content = content.replace(/,(\s*)\]/g, '$1]');
+  
+  content = content.replace(/\n\n\n+/g, '\n\n');
 
   const formatted = await prettier.format(content, {
     parser: "typescript",

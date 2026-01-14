@@ -67,5 +67,98 @@ export async function registerCollection(schema: FeatureSchema) {
 
   const formatted = await prettier.format(registryFile, { parser: "typescript" });
   fs.writeFileSync(registryPath, formatted);
-  console.log(`✓ Registered "${schema.name}" in collectionRegistry`);
+  console.log(`Registered "${schema.name}" in collectionRegistry`);
+}
+
+export async function unregisterCollection(camelName: string, webSrc: string) {
+  const registryPath = path.join(webSrc, "features", "collection", "collectionRegistry.ts");
+  
+  if (!fs.existsSync(registryPath)) {
+    throw new Error(`collectionRegistry.ts not found at ${registryPath}`);
+  }
+
+  let registryFile = fs.readFileSync(registryPath, "utf-8");
+
+  const pascalName = camelName.charAt(0).toUpperCase() + camelName.slice(1);
+  const pluralCamelName = `${camelName}s`;
+  
+  const importPattern = new RegExp(
+    `import\\s*\\{[^}]*useGet${pascalName}ByIdQuery[^}]*useCreate${pascalName}Mutation[^}]*useUpdate${pascalName}Mutation[^}]*\\}\\s*from\\s*["']\\.\\.\\/..\\/app\\/store\\/api\\/${pluralCamelName}Api["'];?\\s*`,
+    's' 
+  );
+  
+  registryFile = registryFile.replace(importPattern, '');
+
+  const keyPattern = `${camelName}:`;
+  const keyIndex = registryFile.indexOf(keyPattern);
+  
+  if (keyIndex !== -1) {
+    let startIndex = keyIndex;
+    
+    while (startIndex > 0) {
+      const char = registryFile[startIndex - 1];
+      if (char === '{' || char === ',') {
+        while (startIndex > 0 && /\s/.test(registryFile[startIndex - 1])) {
+          startIndex--;
+        }
+        if (registryFile[startIndex - 1] === ',') {
+          startIndex--;
+        }
+        break;
+      }
+      startIndex--;
+    }
+    
+    let braceCount = 0;
+    let inString = false;
+    let stringChar = '';
+    let i = keyIndex;
+    
+    while (i < registryFile.length && registryFile[i] !== '{') {
+      i++;
+    }
+    
+    for (; i < registryFile.length; i++) {
+      const char = registryFile[i];
+      const prevChar = i > 0 ? registryFile[i - 1] : '';
+      
+      if ((char === '"' || char === "'") && prevChar !== '\\') {
+        if (!inString) {
+          inString = true;
+          stringChar = char;
+        } else if (char === stringChar) {
+          inString = false;
+          stringChar = '';
+        }
+      }
+
+      if (!inString) {
+        if (char === '{') {
+          braceCount++;
+        } else if (char === '}') {
+          braceCount--;
+          if (braceCount === 0) {
+            let endIndex = i + 1;
+            while (endIndex < registryFile.length && /[\s,]/.test(registryFile[endIndex])) {
+              if (registryFile[endIndex] === ',') {
+                endIndex++;
+                break;
+              }
+              endIndex++;
+            }
+            
+            registryFile = registryFile.substring(0, startIndex) + registryFile.substring(endIndex);
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  registryFile = registryFile.replace(/,\s*,/g, ',');
+  registryFile = registryFile.replace(/,(\s*)\};/g, '$1};');
+  registryFile = registryFile.replace(/\n\n\n+/g, '\n\n');
+
+  const formatted = await prettier.format(registryFile, { parser: "typescript" });
+  fs.writeFileSync(registryPath, formatted);
 }

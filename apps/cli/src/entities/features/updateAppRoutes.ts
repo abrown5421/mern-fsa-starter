@@ -70,7 +70,7 @@ export async function updateAppRoutes(featureName: string, webSrc: string) {
   });
 
   fs.writeFileSync(appFile, formatted);
-  console.log(`✓ Added routes for Admin${capitalizedName} to App.tsx`);
+  console.log(`Added routes for Admin${capitalizedName} to App.tsx`);
 }
 
 export async function removeAppRoutes(featureName: string, webSrc: string) {
@@ -110,5 +110,5 @@ export async function removeAppRoutes(featureName: string, webSrc: string) {
   });
 
   fs.writeFileSync(appFile, formatted);
-  console.log(`✓ Removed routes for Admin${capitalizedName} from App.tsx`);
+  console.log(`Removed routes for Admin${capitalizedName} from App.tsx`);
 }

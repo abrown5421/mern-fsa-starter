@@ -65,3 +65,40 @@ export async function updateServerFile(camelName: string, pluralCamelName: strin
 
   fs.writeFileSync(serverFile, formatted);
 }
+
+export async function removeFromServerFile(camelName: string, pluralCamelName: string, apiRoot: string) {
+  const serverFile = path.join(apiRoot, 'server.ts');
+  
+  if (!fs.existsSync(serverFile)) {
+    throw new Error(`server.ts not found at ${serverFile}`);
+  }
+
+  let content = fs.readFileSync(serverFile, 'utf-8');
+
+  const importPattern = new RegExp(
+    `import ${camelName}Routes from ['"]\\.\\/routes\\/${pluralCamelName}\\.routes['"];?\\s*`,
+    'g'
+  );
+  
+  if (importPattern.test(content)) {
+    content = content.replace(importPattern, '');
+  }
+
+  const routePattern = new RegExp(
+    `app\\.use\\(['"]\\/api\\/${pluralCamelName}['"],\\s*${camelName}Routes\\);\\s*`,
+    'g'
+  );
+  
+  if (routePattern.test(content)) {
+    content = content.replace(routePattern, '');
+  }
+
+  content = content.replace(/\n\n\n+/g, '\n\n');
+
+  const formatted = await prettier.format(content, {
+    parser: 'typescript',
+  });
+
+  fs.writeFileSync(serverFile, formatted);
+}
+
