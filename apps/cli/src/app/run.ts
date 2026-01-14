@@ -1,5 +1,6 @@
 import { featuresMenu } from "../entities/features/menu.js";
 import { pagesMenu } from "../entities/pages/menu.js";
+import { prefabsMenu } from "../entities/prefabs/menu.js";
 import { showMenu } from "../shared/menu.js";
 
 export async function run() {
@@ -9,6 +10,7 @@ export async function run() {
     const domain = await showMenu('What would you like to manage?', [
       { label: 'Pages', value: 'pages' },
       { label: 'Features', value: 'features' },
+      { label: 'Prefabs', value: 'prefabs' },
       { label: 'Exit CLI', value: 'exit' }, 
     ]);
 
@@ -18,6 +20,9 @@ export async function run() {
         break;
       case 'features':
         await featuresMenu();
+        break;
+      case 'prefabs':
+        await prefabsMenu();
         break;
       case 'exit':
         exit = true;
