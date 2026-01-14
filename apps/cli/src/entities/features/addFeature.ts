@@ -7,11 +7,11 @@ import { generateModel } from "./templates/modelTemplate.js";
 import { generateRoute } from "./templates/routeTemplate.js";
 import { generateApiService } from "./templates/apiServiceTemplate.js";
 import { generateTypeDefinitions } from "./templates/typeTemplate.js";
-import { generateCmsPage } from "./templates/generateCmsPage.js";
+import { generateCmsPage } from "./generateCmsPage.js";
 import { updateServerFile } from "./updateServerFile.js";
 import { updateBaseApi } from "./updateBaseApi.js";
-import { updateAdminSidebar } from "./templates/updateAdminSidebar.js";
-import { updateAppRoutes } from "./templates/updateAppRoutes.js";
+import { updateAdminSidebar } from "./updateAdminSidebar.js";
+import { updateAppRoutes } from "./updateAppRoutes.js";
 import { registerCollection, FeatureSchema } from "./registerCollection.js"; 
 import prettier from "prettier";
 
