@@ -69,7 +69,6 @@ export async function registerCollection(schema: FeatureSchema) {
   fs.writeFileSync(registryPath, formatted);
   console.log(`Registered "${schema.name}" in collectionRegistry`);
 }
-
 export async function unregisterCollection(camelName: string, webSrc: string) {
   const registryPath = path.join(webSrc, "features", "collection", "collectionRegistry.ts");
   
@@ -83,82 +82,64 @@ export async function unregisterCollection(camelName: string, webSrc: string) {
   const pluralCamelName = `${camelName}s`;
   
   const importPattern = new RegExp(
-    `import\\s*\\{[^}]*useGet${pascalName}ByIdQuery[^}]*useCreate${pascalName}Mutation[^}]*useUpdate${pascalName}Mutation[^}]*\\}\\s*from\\s*["']\\.\\.\\/..\\/app\\/store\\/api\\/${pluralCamelName}Api["'];?\\s*`,
-    's' 
+    `import\\s*\\{[^}]*?(?:useGet${pascalName}ByIdQuery|useCreate${pascalName}Mutation|useUpdate${pascalName}Mutation)[^}]*?\\}\\s*from\\s*["'].*?\\/${pluralCamelName}Api["'];?\\s*\\n?`,
+    'gs'
   );
   
   registryFile = registryFile.replace(importPattern, '');
 
   const keyPattern = `${camelName}:`;
-  const keyIndex = registryFile.indexOf(keyPattern);
+  let keyIndex = registryFile.indexOf(keyPattern);
   
   if (keyIndex !== -1) {
     let startIndex = keyIndex;
-    
-    while (startIndex > 0) {
-      const char = registryFile[startIndex - 1];
-      if (char === '{' || char === ',') {
-        while (startIndex > 0 && /\s/.test(registryFile[startIndex - 1])) {
-          startIndex--;
-        }
-        if (registryFile[startIndex - 1] === ',') {
-          startIndex--;
-        }
-        break;
-      }
+    while (startIndex > 0 && registryFile[startIndex - 1] !== ',' && registryFile[startIndex - 1] !== '{') {
       startIndex--;
     }
-    
-    let braceCount = 0;
-    let inString = false;
-    let stringChar = '';
+    let actualStart = startIndex;
+    while (actualStart > 0 && /\s/.test(registryFile[actualStart - 1])) {
+      actualStart--;
+    }
+    let depth = 0;
     let i = keyIndex;
+    let foundOpenBrace = false;
     
-    while (i < registryFile.length && registryFile[i] !== '{') {
+    while (i < registryFile.length) {
+      if (registryFile[i] === '{') {
+        foundOpenBrace = true;
+        depth = 1;
+        i++;
+        break;
+      }
       i++;
     }
     
-    for (; i < registryFile.length; i++) {
-      const char = registryFile[i];
-      const prevChar = i > 0 ? registryFile[i - 1] : '';
+    if (foundOpenBrace) {
+      while (i < registryFile.length && depth > 0) {
+        if (registryFile[i] === '{') depth++;
+        else if (registryFile[i] === '}') depth--;
+        i++;
+      }
       
-      if ((char === '"' || char === "'") && prevChar !== '\\') {
-        if (!inString) {
-          inString = true;
-          stringChar = char;
-        } else if (char === stringChar) {
-          inString = false;
-          stringChar = '';
-        }
+      let endIndex = i;
+      while (endIndex < registryFile.length && /[\s,]/.test(registryFile[endIndex])) {
+        endIndex++;
       }
-
-      if (!inString) {
-        if (char === '{') {
-          braceCount++;
-        } else if (char === '}') {
-          braceCount--;
-          if (braceCount === 0) {
-            let endIndex = i + 1;
-            while (endIndex < registryFile.length && /[\s,]/.test(registryFile[endIndex])) {
-              if (registryFile[endIndex] === ',') {
-                endIndex++;
-                break;
-              }
-              endIndex++;
-            }
-            
-            registryFile = registryFile.substring(0, startIndex) + registryFile.substring(endIndex);
-            break;
-          }
-        }
-      }
+      registryFile = registryFile.substring(0, actualStart) + registryFile.substring(endIndex);
     }
   }
 
-  registryFile = registryFile.replace(/,\s*,/g, ',');
-  registryFile = registryFile.replace(/,(\s*)\};/g, '$1};');
+  registryFile = registryFile.replace(/,(\s*),/g, ',$1');
+  registryFile = registryFile.replace(/\{\s*,/g, '{');
+  registryFile = registryFile.replace(/,(\s*)\}/g, '$1}');
   registryFile = registryFile.replace(/\n\n\n+/g, '\n\n');
 
-  const formatted = await prettier.format(registryFile, { parser: "typescript" });
-  fs.writeFileSync(registryPath, formatted);
+  try {
+    const formatted = await prettier.format(registryFile, { parser: "typescript" });
+    fs.writeFileSync(registryPath, formatted);
+  } catch (error) {
+    console.error('Prettier formatting failed. File content before formatting:');
+    console.error(registryFile);
+    throw error;
+  }
 }
