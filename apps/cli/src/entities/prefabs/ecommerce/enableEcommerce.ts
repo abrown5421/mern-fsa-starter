@@ -9,9 +9,11 @@ import { ordersTemplate } from '../../pages/templates/ordersTemplate.js';
 import { orderCompleteTemplate } from '../../pages/templates/orderCompleteTemplate.js';
 import { productsTemplate } from '../../pages/templates/productsTemplate.js';
 import { productTemplate } from '../../pages/templates/productTemplate.js';
-import { useCartTemplate } from '../../pages/templates/useCartTemplate.js';
-import { ordersApiTemplate } from '../../pages/templates/ordersApiTemplate.js';
-import { orderSummaryTemplate } from '../../pages/templates/orderSummaryTemplate.js';
+import { useCartTemplate } from '../../../shared/templates/useCartTemplate.js';
+import { ordersApiTemplate } from '../../../shared/templates/ordersApiTemplate.js';
+import { orderSummaryTemplate } from '../../../shared/templates/orderSummaryTemplate.js';
+import { ordersRoutesTemplate } from '../../../shared/templates/orders.routes.template.js';
+import { cartItemTemplate } from '../../../shared/templates/cartItemTemplate.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,6 +21,7 @@ const __dirname = path.dirname(__filename);
 export async function enableEcommerce() {
     const targetDir = path.resolve(__dirname, '../../../../../web/src/pages/cart');
     const ordersApiPath = path.resolve(__dirname, '../../../../../web/src/app/store/api/ordersApi.ts');
+    const ordersRoutePath = path.resolve(__dirname, '../../../../../api/src/routes/orders.routes.ts');
     const orderSummaryDir = path.resolve(__dirname, '../../../../../web/src/features/orderSummary');
 
     await addFeature({
@@ -149,24 +152,22 @@ export async function enableEcommerce() {
     }
 
     const fileName = 'CartItem.tsx';
-    const content = cartTemplate('CartItem');
+    const content = cartItemTemplate('CartItem');
 
     fs.writeFileSync(path.join(targetDir, fileName), content, 'utf8');
-    
-    console.log(`${fileName} has been created in ${targetDir}`);
 
     const hookFileName = 'useCart.ts';
     const hookContent = useCartTemplate();
 
     fs.writeFileSync(path.join(targetDir, hookFileName), hookContent, 'utf8');
     
-    console.log(`${hookFileName} has been created in ${targetDir}`);
-
     const ordersApiContent = ordersApiTemplate();
 
     fs.writeFileSync(ordersApiPath, ordersApiContent, 'utf8');
 
-    console.log(`ordersApi.ts has been updated using ordersApiTemplate`);
+    const ordersRouteContent = ordersRoutesTemplate();
+
+    fs.writeFileSync(ordersRoutePath, ordersRouteContent, 'utf8');1
     
     if (!fs.existsSync(orderSummaryDir)) {
         fs.mkdirSync(orderSummaryDir, { recursive: true });
@@ -177,5 +178,4 @@ export async function enableEcommerce() {
 
     fs.writeFileSync(path.join(orderSummaryDir, orderSummaryFileName), orderSummaryContent, 'utf8');
 
-    console.log(`${orderSummaryFileName} has been created in ${orderSummaryDir}`);
 }

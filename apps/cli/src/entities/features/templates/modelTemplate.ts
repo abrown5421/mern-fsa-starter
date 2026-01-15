@@ -23,7 +23,7 @@ export function generateModel(schema: FeatureSchema, addTimestamps: boolean): st
   
   const interfaceFields = schema.fields
     .map(field => {
-      let tsType = mongooseTypeToTS(field.type);
+      let tsType = mongooseTypeToTS(field);
       const optional = !field.required ? '?' : '';
       return `  ${field.name}${optional}: ${tsType};`;
     })
@@ -60,8 +60,8 @@ export const ${schema.name}Model = mongoose.model<${interfaceName}>('${schema.na
 `;
 }
 
-function mongooseTypeToTS(type: FieldType): string {
-  switch (type) {
+function mongooseTypeToTS(field: FieldDefinition): string {
+  switch (field.type) {
     case 'String':
       return 'string';
     case 'Number':
@@ -70,45 +70,63 @@ function mongooseTypeToTS(type: FieldType): string {
       return 'boolean';
     case 'Date':
       return 'Date';
+
     case 'ObjectId':
-      return 'string';
+      return 'mongoose.Types.ObjectId';
+
     case 'Array':
+      if (field.ref) {
+        return 'mongoose.Types.ObjectId[]';
+      }
       return 'any[]';
+
     case 'Mixed':
-      return 'any';
     default:
       return 'any';
   }
 }
 
 function buildMongooseFieldDef(field: FieldDefinition): string {
+  if (field.type === 'Array') {
+    if (field.ref) {
+      return `[
+        {
+          type: Schema.Types.ObjectId,
+          ref: '${field.ref}',
+          ${field.required ? 'required: true,' : ''}
+        }
+      ]`;
+    }
+
+    return `{ type: [Schema.Types.Mixed], ${field.required ? 'required: true' : ''} }`;
+  }
+
   const parts: string[] = [];
-  
-  parts.push(`type: ${field.type === 'ObjectId' ? 'Schema.Types.ObjectId' : field.type}`);
-  
-  if (field.required) {
-    parts.push('required: true');
+
+  if (field.type === 'ObjectId') {
+    parts.push('type: Schema.Types.ObjectId');
+  } else {
+    parts.push(`type: ${field.type}`);
   }
-  
-  if (field.unique) {
-    parts.push('unique: true');
-  }
-  
+
+  if (field.required) parts.push('required: true');
+  if (field.unique) parts.push('unique: true');
+
   if (field.default !== undefined) {
-    if (field.type === 'Boolean' || field.type === 'Number') {
+    if (['Boolean', 'Number'].includes(field.type)) {
       parts.push(`default: ${field.default}`);
     } else {
       parts.push(`default: '${field.default}'`);
     }
   }
-  
-  if (field.enum && field.enum.length > 0) {
+
+  if (field.enum?.length) {
     parts.push(`enum: [${field.enum.map(v => `'${v}'`).join(', ')}]`);
   }
-  
+
   if (field.ref) {
     parts.push(`ref: '${field.ref}'`);
   }
-  
+
   return `{ ${parts.join(', ')} }`;
 }
