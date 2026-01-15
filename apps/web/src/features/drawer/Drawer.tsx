@@ -97,7 +97,7 @@ const Drawer: React.FC = () => {
                     <XMarkIcon className="w-7 h-7 text-neutral-contrast" />
                 </div>
             </div>
-            <div className="my-4 h-px w-full bg-neutral-contrast" />
+            <div className="my-4 h-px w-full bg-neutral-contrast/25" />
             {getDrawerContent()}
           </motion.div>
         </>
