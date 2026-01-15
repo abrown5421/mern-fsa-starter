@@ -88,30 +88,49 @@ export async function deletePage(options: DeletePageOptions = {}) {
   console.log(`Removed ${pageName} links from Navbar files`);
 }
 
-
 function removeLinksByPath(content: string, routePath: string): string {
+  
   const lines = content.split('\n');
   const result: string[] = [];
   let i = 0;
-  let skipUntilClosing = false;
+  let inLink = false;
+  let linkBuffer: string[] = [];
+  let linkStartIndex = -1;
   
   while (i < lines.length) {
     const line = lines[i];
     
-    if (skipUntilClosing) {
-      if (line.includes('</Link>')) {
-        skipUntilClosing = false;
-      }
+    if (line.includes('<Link') && !line.includes('</Link>')) {
+      inLink = true;
+      linkBuffer = [line];
+      linkStartIndex = i;
       i++;
       continue;
     }
     
-    if (line.includes('<Link') && line.includes(`to="${routePath}"`)) {
+    if (inLink) {
+      linkBuffer.push(line);
+      
       if (line.includes('</Link>')) {
-        i++;
-        continue;
-      } else {
-        skipUntilClosing = true;
+        const fullLink = linkBuffer.join('\n');
+        const toMatch = fullLink.match(/to=["']([^"']+)["']/);
+        
+        if (toMatch && toMatch[1] === routePath) {
+        } else {
+          result.push(...linkBuffer);
+        }
+        
+        inLink = false;
+        linkBuffer = [];
+        linkStartIndex = -1;
+      }
+      
+      i++;
+      continue;
+    }
+    if (line.includes('<Link') && line.includes('</Link>')) {
+      const toMatch = line.match(/to=["']([^"']+)["']/);
+      if (toMatch && toMatch[1] === routePath) {
         i++;
         continue;
       }

@@ -98,10 +98,12 @@ const Product = () => {
       className="h-screen bg-neutral sup-min-nav relative z-0 p-4 flex flex-col justify-center items-center"
     >
       {isLoading ? (
-        <Loader />
+        <div className="bg-neutral sup-min-nav relative z-0 p-4 flex justify-center items-center">
+            <Loader />
+        </div>
       ) : error || !product ? (
         <div className="text-center text-primary mt-10">
-          <h2 className="text-2xl font-semibold mb-2">Product Not Found</h2>
+          <h2 className="text-2xl font-semibold mb-2">Product Not Found</h2>s
           <p className="text-neutral-500">Sorry, we couldn't find the product you are looking for.</p>
         </div>
       ) : (

@@ -11,28 +11,31 @@ dotenv.config();
 
 const app = express();
 
-console.log('CLIENT_URL:', process.env.CLIENT_URL);
-console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log("CLIENT_URL:", process.env.CLIENT_URL);
+console.log("NODE_ENV:", process.env.NODE_ENV);
 
 const allowedOrigins = [
   process.env.CLIENT_URL || "http://localhost:5173",
-  "http://localhost:5173"
+  "http://localhost:5173",
 ].filter(Boolean);
 
-console.log('Allowed origins:', allowedOrigins);
+console.log("Allowed origins:", allowedOrigins);
 
 const corsOptions = {
-  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    console.log('Request from origin:', origin);
-    
+  origin: function (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void,
+  ) {
+    console.log("Request from origin:", origin);
+
     if (!origin) {
       return callback(null, true);
     }
-    
+
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.log('Origin not allowed:', origin);
+      console.log("Origin not allowed:", origin);
       callback(new Error(`Origin ${origin} not allowed by CORS`));
     }
   },
@@ -53,7 +56,6 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/integrations", integrationsRoutes);
-
 const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {

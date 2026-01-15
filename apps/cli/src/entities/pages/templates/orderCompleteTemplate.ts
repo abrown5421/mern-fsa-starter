@@ -35,7 +35,9 @@ const ${pageName} = () => {
       className="bg-neutral sup-min-nav relative z-0 p-4"
     >
       {isLoading ? (
-        <Loader />
+        <div className="bg-neutral sup-min-nav relative z-0 p-4 flex justify-center items-center">
+            <Loader />
+        </div>
       ) : error || !orderData ? (
         <div className="text-center text-red-500 mt-10 font-primary">
           <h2 className="text-2xl font-semibold mb-2">Order Not Found</h2>
