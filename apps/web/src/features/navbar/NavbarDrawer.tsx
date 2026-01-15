@@ -40,13 +40,23 @@ const NavbarDrawer: React.FC = () => {
       </Link>
 
       {/* new links inserted here */}
+      <Link
+        onClick={closeOnClick}
+        className={classString("/staff")}
+        to="/staff"
+      >
+        Staff
+      </Link>
+      <Link
+        onClick={closeOnClick}
+        className={classString("/staff")}
+        to="/staff"
+      >
+        Staff
+      </Link>
 
       {!isAuthenticated && (
-        <Link
-          onClick={closeOnClick}
-          className="mt-auto btn-primary"
-          to="/auth"
-        >
+        <Link onClick={closeOnClick} className="mt-auto btn-primary" to="/auth">
           Login
         </Link>
       )}
@@ -60,11 +70,7 @@ const NavbarDrawer: React.FC = () => {
           >
             Profile
           </Link>
-          <Link
-            onClick={handleLogout}
-            className="mt-auto btn-error"
-            to="/auth"
-          >
+          <Link onClick={handleLogout} className="mt-auto btn-error" to="/auth">
             Logout
           </Link>
         </div>

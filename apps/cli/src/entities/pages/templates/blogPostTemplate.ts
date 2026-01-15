@@ -9,7 +9,7 @@ const ${pageName} = () => {
 
   const { data: post, isLoading, error } = useGetBlogPostByIdQuery(id!);
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return (<div className="bg-neutral sup-min-nav relative z-0 p-4 flex justify-center items-center"><Loader /></div>);
 
 if (error || !post) {
     return (

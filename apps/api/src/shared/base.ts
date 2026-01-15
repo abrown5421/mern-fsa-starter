@@ -24,13 +24,25 @@ export const createBaseCRUD = <T extends Document>(
 
   router.get('/', async (req, res) => {
     try {
-      const docs = await model.find({});
+      const filters: Record<string, any> = {};
+
+      Object.entries(req.query).forEach(([key, value]) => {
+        if (!value) return;
+
+        if (typeof value === 'string' && value.includes(',')) {
+          filters[key] = { $in: value.split(',') };
+        } else {
+          filters[key] = value;
+        }
+      });
+
+      const docs = await model.find(filters);
       res.json(docs);
     } catch (err: any) {
       res.status(400).json({ error: err.message });
     }
   });
-
+  
   router.get('/:id', async (req, res) => {
     try {
       const doc = await model.findById(req.params.id);

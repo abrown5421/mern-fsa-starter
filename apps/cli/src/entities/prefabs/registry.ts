@@ -44,7 +44,15 @@ export const prefabs = {
   staff: {
     label: "Staff",
     enabled: false,
-    enable: async () => { console.log("Enable Staff"); prefabs.staff.enabled = true; },
-    disable: async () => { console.log("Disable Staff"); prefabs.staff.enabled = false; },
+    enable: async () => {
+      const { enableStaff } = await import("./staff/enableStaff.js");
+      await enableStaff();
+      prefabs.staff.enabled = true;
+    },
+    disable: async () => {
+      const { disableStaff } = await import("./staff/disableStaff.js");
+      await disableStaff();
+      prefabs.blog.enabled = false;
+    },
   },
 };

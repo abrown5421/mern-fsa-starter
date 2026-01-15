@@ -66,10 +66,7 @@ const Navbar: React.FC = () => {
             transition={{ duration: 0.3 }}
             className="overflow-hidden ml-4"
           >
-            <Link
-              className="btn-primary"
-              to="/auth"
-            >
+            <Link className="btn-primary" to="/auth">
               Login
             </Link>
           </motion.div>

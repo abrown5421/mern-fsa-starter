@@ -74,7 +74,7 @@ const ${pageName} = () => {
               {post.post_category}
             </div>
             <img
-              src={post.post_image || "https://wearebctech.com/wp-content/uploads/2021/12/HEADER-PLACEHOLDER.jpg"}
+              src={post.post_image || || "/assets/images/header_placeholder.jpg"}
               alt={post.post_title}
               className="w-full h-40 object-cover"
             />
