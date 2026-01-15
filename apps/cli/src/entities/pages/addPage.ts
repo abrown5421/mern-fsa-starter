@@ -59,7 +59,6 @@ export async function addPage(options: AddPageOptions = {}) {
 
   if (addToNavbar) {
     await updateNavbar(pageName, routePath);
-    console.log(`Page "${pageName}" added to the navbar`);
   }
 
   console.log(`Page "${pageName}" created at ${routePath}`);

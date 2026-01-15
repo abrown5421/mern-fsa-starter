@@ -30,7 +30,6 @@ export async function deletePage(options: DeletePageOptions = {}) {
   }
 
   fs.rmSync(pageFolder, { recursive: true, force: true });
-  console.log(`Deleted folder: ${pageFolder}`);
 
   let appContent = fs.readFileSync(appFile, 'utf-8');
 
@@ -42,9 +41,7 @@ export async function deletePage(options: DeletePageOptions = {}) {
   const routeMatch = routePathRegex.exec(appContent);
   const routePath = routeMatch ? routeMatch[1] : null;
 
-  if (routePath) {
-    console.log(`Found route path: ${routePath}`);
-  } else {
+  if (!routePath) {
     console.log(`Warning: Could not find route path for ${pageName}`);
   }
 
@@ -64,7 +61,6 @@ export async function deletePage(options: DeletePageOptions = {}) {
     appFile,
     await prettier.format(appContent, { parser: 'typescript' })
   );
-  console.log(`Removed ${pageName} from App.tsx`);
 
   if (!routePath) {
     console.log('Skipping navbar link removal (no route path found)');

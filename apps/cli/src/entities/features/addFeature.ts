@@ -51,8 +51,6 @@ function isPlural(word: string): boolean {
 }
 
 export async function addFeature(options: AddFeatureOptions = {}) {
-  console.log("\n Creating a new feature...\n");
-
   const featureName =
     options.featureName ??
     (await (async () => {
@@ -125,16 +123,12 @@ export async function addFeature(options: AddFeatureOptions = {}) {
       default: true,
     }));
 
-  console.log("\n📦 Generating files...\n");
-
   await generateBackendFiles(schema, addTimestamps, apiRoot);
   await generateFrontendFiles(schema);
   await updateBaseApi(featureName, webSrc);
   await updateServerFile(camelName, pluralCamelName, apiRoot);
 
   if (addToCms) {
-    console.log("\n Generating CMS interface...\n");
-
     fs.mkdirSync(cmsPageDir, { recursive: true });
     const cmsPageContent = generateCmsPage(schema);
     const cmsPageFile = path.join(cmsPageDir, `Admin${featureName}.tsx`);
@@ -149,29 +143,10 @@ export async function addFeature(options: AddFeatureOptions = {}) {
 
   await registerCollection(schema);
 
-  console.log(`\n Feature "${featureName}" created successfully!`);
-  console.log(` Backend: ${backendFeatureDir}`);
-  console.log(` Frontend API: ${apiFile}`);
-  if (addToCms) console.log(` CMS: ${cmsPageDir}`);
-  console.log(` CMS route: /admin-${camelName}`);
+  console.log(`\n Feature "${featureName}" has been successfully created!`);
 }
 
 async function getSchemaFromJson(featureName: string): Promise<FeatureSchema> {
-  console.log("\n Enter your schema as JSON. Example:");
-  console.log(
-    JSON.stringify(
-      {
-        fields: [
-          { name: "title", type: "String", required: true },
-          { name: "price", type: "Number", required: true },
-          { name: "inStock", type: "Boolean", required: false, default: "true" },
-        ],
-      },
-      null,
-      2,
-    ),
-  );
-
   const jsonInput = await input({
     message: "Paste your JSON schema:",
     validate: (value) => {
@@ -189,8 +164,6 @@ async function getSchemaFromJson(featureName: string): Promise<FeatureSchema> {
 async function getSchemaInteractively(featureName: string): Promise<FeatureSchema> {
   const fields: FieldDefinition[] = [];
   let addMore = true;
-
-  console.log("\n Define your fields (you can add multiple):\n");
 
   while (addMore) {
     const fieldName = await input({
@@ -246,8 +219,6 @@ async function generateBackendFiles(schema: FeatureSchema, addTimestamps: boolea
   const routeDir = path.join(apiRoot, "routes");
   const routeFile = path.join(routeDir, `${camelName}s.routes.ts`);
   fs.writeFileSync(routeFile, await prettier.format(routeContent, { parser: "typescript" }));
-
-  console.log(` Created backend files for ${camelName}`);
 }
 
 async function generateFrontendFiles(schema: FeatureSchema) {
@@ -263,5 +234,4 @@ async function generateFrontendFiles(schema: FeatureSchema) {
   const apiContent = generateApiService(schema);
   fs.writeFileSync(path.join(apiDir, `${pluralCamelName}Api.ts`), await prettier.format(apiContent, { parser: "typescript" }));
 
-  console.log(` Created frontend files for ${pluralCamelName}`);
 }
