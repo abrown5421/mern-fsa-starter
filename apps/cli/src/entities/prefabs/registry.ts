@@ -42,7 +42,11 @@ export const prefabs = {
       await enableEcommerce();
       prefabs.ecommerce.enabled = true;
     },
-    disable: async () => { console.log("Disable Ecommerce"); prefabs.ecommerce.enabled = false; },
+    disable: async () => {
+      const { disableEcommerce } = await import("./ecommerce/disableEcommerce.js");
+      await disableEcommerce();
+      prefabs.ecommerce.enabled = false;
+    },
   },
 
   staff: {
