@@ -36,7 +36,7 @@ const ${pageName} = () => {
 
   useEffect(() => setCurrentPage(1), [selectedCategory]);
 
-  if (isLoading) return <Loader />;
+  if (isLoading) return <div className="bg-neutral sup-min-nav relative z-0 p-4 flex justify-center items-center"><Loader /></div>;
   if (error || !posts) return <div className="text-center text-red-500 mt-10 font-primary">
     <h2 className="text-2xl font-semibold mb-2">Blog posts Not Found</h2>
     <p className="text-neutral-500">Sorry, we couldn't find the blog post you were looking for.</p>
@@ -74,7 +74,7 @@ const ${pageName} = () => {
               {post.post_category}
             </div>
             <img
-              src={post.post_image || || "/assets/images/header_placeholder.jpg"}
+              src={post.post_image || "/assets/images/header_placeholder.jpg"}
               alt={post.post_title}
               className="w-full h-40 object-cover"
             />

@@ -6,6 +6,7 @@ import {
   ShoppingBagIcon,
   ClipboardDocumentListIcon,
   EllipsisVerticalIcon,
+  CubeIcon,
 } from "@heroicons/react/24/outline";
 import { useAppDispatch } from "../../app/store/hooks";
 import { openDrawer } from "../drawer/drawerSlice";
@@ -28,10 +29,10 @@ const AdminSidebar: React.FC = () => {
         open: true,
         drawerContent: "sidebar",
         anchor: "left",
-        title: "Ecommerce Admin"
+        title: "Ecommerce Admin",
       }),
     );
-  }
+  };
 
   return (
     <motion.div
@@ -41,7 +42,10 @@ const AdminSidebar: React.FC = () => {
       transition={{ duration: 0.3 }}
       className="sup-min-nav transition-all bg-neutral-700 text-white py-6 md:p-4 flex md:flex-2 md:flex-col shadow-[2px_0_4px_rgba(0,0,0,0.1)] md:relative z-20 absolute sm:left-0 top-1/2 transform"
     >
-      <EllipsisVerticalIcon onClick={handleOpenSidebar} className="flex md:hidden w-6 h-6 text-white" />
+      <EllipsisVerticalIcon
+        onClick={handleOpenSidebar}
+        className="flex md:hidden w-6 h-6 text-white"
+      />
       <nav className="hidden md:flex flex-col space-y-3">
         {links.map((link) => {
           const isActive = location.pathname === link.url;
