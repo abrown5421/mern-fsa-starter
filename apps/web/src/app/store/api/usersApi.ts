@@ -19,6 +19,22 @@ export const usersApi = baseApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: 'User', id }],
     }),
 
+    getEditorsAndAdmins: builder.query<IUser[], void>({
+      query: () => ({
+        url: '/users',
+        params: {
+          type: ['admin', 'editor'], 
+        },
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ _id }) => ({ type: 'User' as const, id: _id })),
+              { type: 'User', id: 'EDITOR_ADMIN_LIST' },
+            ]
+          : [{ type: 'User', id: 'EDITOR_ADMIN_LIST' }],
+    }),
+
     createUser: builder.mutation<IUser, CreateUserDto>({
       query: (userData) => ({
         url: '/users',
@@ -56,6 +72,7 @@ export const usersApi = baseApi.injectEndpoints({
 export const {
   useGetUsersQuery,
   useGetUserByIdQuery,
+  useGetEditorsAndAdminsQuery,
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,

@@ -7,6 +7,7 @@ export interface IUser {
   email: string;
   type: UserType;
   profileImage?: string;
+  bio?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,6 +19,7 @@ export interface CreateUserDto {
   password: string;
   type?: UserType;
   profileImage?: string;
+  bio?: string;
 }
 
 export interface UpdateUserDto {
@@ -27,4 +29,5 @@ export interface UpdateUserDto {
   password?: string;
   type?: UserType;
   profileImage?: string;
+  bio?: string;
 }
