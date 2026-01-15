@@ -15,8 +15,6 @@ export type DeleteFeatureOptions = {
 };
 
 export async function deleteFeature(options: DeleteFeatureOptions = {}) {
-  console.log("\n🗑️  Deleting a feature...\n");
-
   const apiRoot = path.join(repoRoot, "apps/api/src");
   const entitiesDir = path.join(apiRoot, "entities");
 
@@ -100,19 +98,6 @@ export async function deleteFeature(options: DeleteFeatureOptions = {}) {
     return;
   }
 
-  console.log("\n📋 The following will be deleted:\n");
-  if (checks.backend) console.log(`  Backend entity: ${backendFeatureDir}`);
-  if (checks.route) console.log(`  Backend route: ${routeFile}`);
-  if (checks.frontendApi) console.log(`  Frontend API: ${frontendApiFile}`);
-  if (checks.frontendTypes)
-    console.log(`  Frontend types: ${frontendTypesFile}`);
-  if (checks.cms) console.log(`  CMS page: ${cmsPageDir}`);
-  console.log(`  Server.ts route registration`);
-  console.log(`  BaseApi tag type`);
-  console.log(`  App.tsx routes`);
-  console.log(`  AdminSidebar link`);
-  console.log(`  Collection registry entry`);
-
   if (!options.skipConfirm) {
     const confirmDelete = await confirm({
       message: `Are you sure you want to delete feature "${featureName}"? This cannot be undone.`,
@@ -125,8 +110,6 @@ export async function deleteFeature(options: DeleteFeatureOptions = {}) {
     }
   }
 
-  console.log("\n🗑️  Deleting files and updating references...\n");
-
   if (checks.backend) fs.rmSync(backendFeatureDir, { recursive: true, force: true });
   if (checks.route) fs.unlinkSync(routeFile);
   if (checks.frontendApi) fs.unlinkSync(frontendApiFile);
@@ -136,7 +119,6 @@ export async function deleteFeature(options: DeleteFeatureOptions = {}) {
   const safe = async (label: string, fn: () => Promise<void>) => {
     try {
       await fn();
-      console.log(label);
     } catch (err) {
       console.log(
         `${label} failed: ${
