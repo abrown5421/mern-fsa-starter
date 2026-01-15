@@ -37,7 +37,11 @@ export const prefabs = {
   ecommerce: {
     label: "Ecommerce",
     enabled: false,
-    enable: async () => { console.log("Enable Ecommerce"); prefabs.ecommerce.enabled = true; },
+    enable: async () => {
+      const { enableEcommerce } = await import("./ecommerce/enableEcommerce.js");
+      await enableEcommerce();
+      prefabs.ecommerce.enabled = true;
+    },
     disable: async () => { console.log("Disable Ecommerce"); prefabs.ecommerce.enabled = false; },
   },
 
@@ -52,7 +56,7 @@ export const prefabs = {
     disable: async () => {
       const { disableStaff } = await import("./staff/disableStaff.js");
       await disableStaff();
-      prefabs.blog.enabled = false;
+      prefabs.staff.enabled = false;
     },
   },
 };
