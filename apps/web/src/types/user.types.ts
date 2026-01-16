@@ -1,13 +1,23 @@
 export type UserType = 'user' | 'editor' | 'admin';
 
+export interface Address {
+  addrLine1: string;
+  addrLine2?: string;
+  addrCity: string;
+  addrState: string;
+  addrZip: number;
+}
+
 export interface IUser {
   _id: string;
   firstName: string;
   lastName: string;
   email: string;
   type: UserType;
+  mailingAddress?: Address;
+  billingAddress?: Address;
+  sameAddress?: boolean;
   profileImage?: string;
-  bio?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,8 +28,10 @@ export interface CreateUserDto {
   email: string;
   password: string;
   type?: UserType;
+  mailingAddress?: Address;
+  billingAddress?: Address;
+  sameAddress?: boolean;
   profileImage?: string;
-  bio?: string;
 }
 
 export interface UpdateUserDto {
@@ -28,6 +40,8 @@ export interface UpdateUserDto {
   email?: string;
   password?: string;
   type?: UserType;
+  mailingAddress?: Address;
+  billingAddress?: Address;
+  sameAddress?: boolean;
   profileImage?: string;
-  bio?: string;
 }
