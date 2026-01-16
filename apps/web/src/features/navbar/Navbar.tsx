@@ -12,7 +12,8 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const isAuth = location.pathname === "/auth";
 
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);  const getGreeting = () => {
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const getGreeting = () => {
     const hour = new Date().getHours();
 
     if (hour < 12) {
@@ -80,7 +81,6 @@ const Navbar: React.FC = () => {
                 className="relative w-7 h-7 cursor-pointer"
               >
                 <ShoppingBagIcon className="w-full h-full text-secondary" />
-                
               </div>
             )}
             <div
