@@ -1,12 +1,8 @@
 # MERN FSA Starter
 
-A modern MERN frontend starter built with React, Redux Toolkit, TypeScript, and Feature-Sliced Architecture. This project lives inside a pnpm monorepo and is designed to scale cleanly from small applications to large production systems while maintaining predictable structure and clear ownership of code.
-
-This documentation covers the frontend only. Backend and CLI documentation will be added separately.# MERN FSA Starter
-
 MERN FSA Starter is a modern, scalable frontend and backend starter boilerplate built with **React**, **Redux Toolkit**, **TypeScript**, and **Feature-Sliced Architecture (FSA)**. This project is structured as a **pnpm monorepo** and is designed to support applications ranging from small prototypes to large-scale production systems, ensuring maintainable code structure and clear ownership.
 
-This documentation focuses primarily on the frontend application. Separate documentation for the backend and CLI is also included.
+This documentation focuses on the three independent modules, backend, rontend, and CLI, that make up the application.
 
 ---
 
@@ -15,6 +11,7 @@ This documentation focuses primarily on the frontend application. Separate docum
 You can explore a live demo of this boilerplate here:  
 [https://mern-boilerplate-web.onrender.com/](https://mern-boilerplate-web.onrender.com/)
 
+<sub>please note that the application enabled all of its prefabs for the purposes of this demo. The prefabs, such as the ecommerce flow or the blog flow can be enabled and disabled using the CLI. Please see more about this in the CLI section below.</sub>
 Test login credentials:  
 - **Email:** `test.user@gmail.com`  
 - **Password:** `TestUserPassword123!`  
