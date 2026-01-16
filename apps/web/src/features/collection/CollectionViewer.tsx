@@ -9,6 +9,7 @@ interface Column<T> {
   label: string;
   render?: (item: T) => React.ReactNode;
   hideOnSmall?: boolean;
+  maxLength?: number;
 }
 
 interface CollectionViewerProps<T> {
@@ -52,10 +53,11 @@ function CollectionViewer<T extends { _id: string }>({
     return filteredData.slice(start, start + itemsPerPage);
   }, [filteredData, currentPage, itemsPerPage]);
   
-  const truncateValue = (value: unknown, maxLength = 20) => {
-    if (value == null) return "";
+  const truncateValue = (value: unknown, maxLength?: number) => {
+    if (value == null) return '';
     const str = String(value);
-    return str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
+    if (!maxLength) return str;
+    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
   };
 
   return (
@@ -89,8 +91,8 @@ function CollectionViewer<T extends { _id: string }>({
             </tr>
           </thead>
           <tbody>
-            {paginatedData.map((item) => (
-              <tr key={item._id} className="border-b border-neutral-400">
+            {paginatedData.map((item, idx) => (
+              <tr key={item._id} className={`border-2 border-neutral-contrast/5 ${idx % 2 ? "bg-neutral-contrast/5" : "bg-neutral"}`}>
                 {columns.map((col) => (
                   <td
                     key={String(col.key)}
@@ -98,36 +100,48 @@ function CollectionViewer<T extends { _id: string }>({
                       col.hideOnSmall ? 'hidden md:table-cell' : ''
                     }`}
                   >
-                    {col.render ? (
-                      col.render(item)
-                    ) : (
-                      <>
-                        <span className="md:hidden">{truncateValue(item[col.key])}</span>
-                        <span className="hidden md:inline">{item[col.key] != null ? String(item[col.key]) : ''}</span>
-                      </>
-                    )}
+                    {col.render
+                      ? col.render(item)
+                      : truncateValue(item[col.key], col.maxLength)}
                   </td>
                 ))}
                 {(onEdit || onDelete) && (
-                  <td className="px-4 py-2 flex md:space-x-2 justify-end items-center h-full">
-                    {onEdit && (
-                      <button
-                        onClick={() => navigate(`/admin-${featureName}/${item._id}`)}
-                        className="p-1 text-secondary hover:text-accent rounded cursor-pointer transition-all"
-                        title="Edit"
-                      >
-                        <PencilIcon className="w-5 h-5" />
-                      </button>
-                    )}
-                    {onDelete && (
-                      <button
-                        onClick={() => onDelete(item)}
-                        className="p-1 text-red-600 hover:text-red-800 rounded cursor-pointer transition-all"
-                        title="Delete"
-                      >
-                        <TrashIcon className="w-5 h-5" />
-                      </button>
-                    )}
+                  <td className="px-4 py-2">
+                    <div className="flex justify-end items-center md:space-x-2 h-full">
+                      {onEdit && (
+                        <div className="relative group">
+                          <button
+                            onClick={() => navigate(`/admin-${featureName}/${item._id}`)}
+                            className="p-1 text-secondary hover:text-accent rounded cursor-pointer transition-all"
+                          >
+                            <PencilIcon className="w-5 h-5" />
+                          </button>
+
+                          <span className="pointer-events-none absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap
+                                          rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0
+                                          transition-opacity group-hover:opacity-100">
+                            Edit
+                          </span>
+                        </div>
+                      )}
+
+                      {onDelete && (
+                        <div className="relative group">
+                          <button
+                            onClick={() => onDelete(item)}
+                            className="p-1 text-red-600 hover:text-red-800 rounded cursor-pointer transition-all"
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </button>
+
+                          <span className="pointer-events-none absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap
+                                          rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0
+                                          transition-opacity group-hover:opacity-100">
+                            Delete
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </td>
                 )}
               </tr>

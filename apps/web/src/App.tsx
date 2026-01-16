@@ -16,6 +16,19 @@ import AdminDashboard from "./pages/adminDashboard/AdminDashboard";
 import AdminBar from "./features/adminBar/AdminBar";
 import AdminSidebar from "./features/adminSidebar/AdminSidebar";
 import AdminUser from "./pages/adminUser/AdminUser";
+import AdminBlogPost from "./pages/adminBlogPost/AdminBlogPost";
+import AdminProduct from "./pages/adminProduct/AdminProduct";
+import AdminOrder from "./pages/adminOrder/AdminOrder";
+import Blog from "./pages/blog/Blog";
+import BlogPost from "./pages/blogPost/BlogPost";
+import Staff from "./pages/staff/Staff";
+import Contact from "./pages/contact/Contact";
+import Checkout from "./pages/checkout/Checkout";
+import Cart from "./pages/cart/Cart";
+import Orders from "./pages/orders/Orders";
+import OrderComplete from "./pages/orderComplete/OrderComplete";
+import Product from "./pages/product/Product";
+import Products from "./pages/products/Products";
 const App: React.FC = () => {
   const location = useLocation();
   const { data: activeUser, isLoading } = useGetCurrentUserQuery();
@@ -44,6 +57,25 @@ const App: React.FC = () => {
               <Route path="/auth" element={<Auth />} />
               <Route path="/profile" element={<Profile />} />{" "}
               {/* new routes inserted here */}
+              <Route path="/products" element={<Products />} />
+              <Route path="/product/:id" element={<Product />} />
+              <Route path="/order-complete/:id" element={<OrderComplete />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/admin-order" element={<AdminOrder />} />
+              <Route path="/admin-order/:id" element={<AdminOrder />} />
+              <Route path="/admin-order/new" element={<AdminOrder />} />
+              <Route path="/admin-product" element={<AdminProduct />} />
+              <Route path="/admin-product/:id" element={<AdminProduct />} />
+              <Route path="/admin-product/new" element={<AdminProduct />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/staff" element={<Staff />} />
+              <Route path="/admin-blogPost" element={<AdminBlogPost />} />
+              <Route path="/admin-blogPost/:id" element={<AdminBlogPost />} />
+              <Route path="/admin-blogPost/new" element={<AdminBlogPost />} />
+              <Route path="/blog/:id" element={<BlogPost />} />
+              <Route path="/blog" element={<Blog />} />
               <Route path="/admin-user" element={<AdminUser />} />
               <Route path="/admin-user/:id" element={<AdminUser />} />
               <Route path="/admin-user/new" element={<AdminUser />} />

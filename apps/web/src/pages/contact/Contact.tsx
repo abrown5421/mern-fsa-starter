@@ -1,5 +1,4 @@
-
-export const contactTemplate = () => `import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
 import { useEffect, useState } from 'react';
 import { openAlert } from '../../features/alert/alertSlice';
@@ -116,7 +115,7 @@ const Contact = () => {
               name="firstName"
               value={form.firstName}
               onChange={handleChange}
-              className={\`input-primary w-full \${errors.firstName ? 'border-red-500 focus:ring-red-500' : ''}\`}
+              className={`input-primary w-full ${errors.firstName ? 'border-red-500 focus:ring-red-500' : ''}`}
             />
             {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
           </div>
@@ -139,7 +138,7 @@ const Contact = () => {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className={\`input-primary w-full \${errors.email ? 'border-red-500 focus:ring-red-500' : ''}\`}
+              className={`input-primary w-full ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
@@ -151,7 +150,7 @@ const Contact = () => {
               name="subject"
               value={form.subject}
               onChange={handleChange}
-              className={\`input-primary w-full \${errors.subject ? 'border-red-500 focus:ring-red-500' : ''}\`}
+              className={`input-primary w-full ${errors.subject ? 'border-red-500 focus:ring-red-500' : ''}`}
             />
             {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject}</p>}
           </div>
@@ -162,7 +161,7 @@ const Contact = () => {
               name="body"
               value={form.body}
               onChange={handleChange}
-              className={\`input-primary w-full h-32 resize-none \${errors.body ? 'border-red-500 focus:ring-red-500' : ''}\`}
+              className={`input-primary w-full h-32 resize-none ${errors.body ? 'border-red-500 focus:ring-red-500' : ''}`}
             />
             {errors.body && <p className="text-red-500 text-sm mt-1">{errors.body}</p>}
           </div>
@@ -177,4 +176,3 @@ const Contact = () => {
 };
 
 export default Contact;
-`;

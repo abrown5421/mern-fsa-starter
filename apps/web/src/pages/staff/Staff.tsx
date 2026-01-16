@@ -1,4 +1,4 @@
-export const staffTemplate = (pageName: string) => `import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useGetEditorsAndAdminsQuery } from '../../app/store/api/usersApi';
 import { useState, useMemo } from 'react';
 import Loader from '../../features/loader/Loader';
@@ -6,7 +6,7 @@ import Pagination from '../../features/pagination/Pagination';
 
 const ITEMS_PER_PAGE = 8;
 
-const ${pageName} = () => {
+const Staff = () => {
   const { data: staffUsers, isLoading, error } = useGetEditorsAndAdminsQuery();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -113,5 +113,4 @@ const ${pageName} = () => {
   );
 };
 
-export default ${pageName};
-`;
+export default Staff;

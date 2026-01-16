@@ -13,7 +13,7 @@ const NavbarDrawer: React.FC = () => {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
   const classString = (path?: string) =>
-    `py-4 ${location === path ? "text-primary hover:text-accent" : "hover:text-primary"}`;
+    `transition-all py-4 ${location === path ? "text-primary hover:text-accent" : "hover:text-primary"}`;
 
   const handleLogout = async () => {
     closeOnClick();
@@ -30,16 +30,32 @@ const NavbarDrawer: React.FC = () => {
       <Link onClick={closeOnClick} className={classString("/")} to="/">
         Home
       </Link>
-      <Link
-        onClick={closeOnClick}
-        className={classString()}
-        target="blank"
-        to="https://google.com"
-      >
-        Test
-      </Link>
 
       {/* new links inserted here */}
+      <Link
+        onClick={closeOnClick}
+        className={classString("/products")}
+        to="/products"
+      >
+        Products
+      </Link>
+      <Link
+        onClick={closeOnClick}
+        className={classString("/staff")}
+        to="/staff"
+      >
+        Staff
+      </Link>
+      <Link onClick={closeOnClick} className={classString("/blog")} to="/blog">
+        Blog
+      </Link>
+      <Link
+        onClick={closeOnClick}
+        className={classString("/contact")}
+        to="/contact"
+      >
+        Contact
+      </Link>
 
       {!isAuthenticated && (
         <Link onClick={closeOnClick} className="mt-auto btn-primary" to="/auth">
@@ -55,6 +71,16 @@ const NavbarDrawer: React.FC = () => {
             to="/profile"
           >
             Profile
+          </Link>
+          <Link
+            onClick={closeOnClick}
+            className={classString("/orders")}
+            to="/orders"
+          >
+            My Orders
+          </Link>
+          <Link onClick={closeOnClick} className={classString("/cart")} to="/cart">
+            Cart
           </Link>
           <Link onClick={handleLogout} className="mt-auto btn-error" to="/auth">
             Logout
