@@ -18,6 +18,7 @@ export interface IUser {
   billingAddress?: Address;
   sameAddress?: boolean;
   profileImage?: string;
+  bio?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,6 +33,7 @@ export interface CreateUserDto {
   billingAddress?: Address;
   sameAddress?: boolean;
   profileImage?: string;
+  bio?: string;
 }
 
 export interface UpdateUserDto {
@@ -44,4 +46,5 @@ export interface UpdateUserDto {
   billingAddress?: Address;
   sameAddress?: boolean;
   profileImage?: string;
+  bio?: string;
 }
