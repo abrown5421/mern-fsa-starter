@@ -1,8 +1,6 @@
 import { showMenu } from "../../shared/menu.js";
 import { prefabs } from "./registry.js";
 
-type PrefabKey = keyof typeof prefabs;
-
 export async function prefabsMenu() {
   let back = false;
 

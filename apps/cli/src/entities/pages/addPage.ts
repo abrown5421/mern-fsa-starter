@@ -3,7 +3,6 @@ import path from 'node:path';
 import { input, confirm } from '@inquirer/prompts';
 import { isPascalCase, toCamelCase } from '../../shared/case.js';
 import { pagesDir } from '../../shared/paths.js';
-import { pageTemplate } from './templates/pageTemplate.js';
 import { updateAppRoutes } from './updateAppRoutes.js';
 import { updateNavbar } from './updateNavbar.js';
 import { templates } from './templates/templateRegistry.js';

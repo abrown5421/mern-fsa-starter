@@ -1,18 +1,18 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Bars3Icon } from "@heroicons/react/24/solid";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Bars3Icon, ShoppingBagIcon } from "@heroicons/react/24/solid";
 import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
 import { openDrawer } from "../drawer/drawerSlice";
 import { motion } from "framer-motion";
+import { PREFABS } from "../../config/prefabs";
 
 const Navbar: React.FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
   const isAuth = location.pathname === "/auth";
 
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
-
-  const getGreeting = () => {
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);  const getGreeting = () => {
     const hour = new Date().getHours();
 
     if (hour < 12) {
@@ -74,9 +74,18 @@ const Navbar: React.FC = () => {
 
         {isAuthenticated && user && (
           <div className="flex items-center ml-4">
+            {PREFABS.ecommerce && (
+              <div
+                onClick={() => navigate("/cart")}
+                className="relative w-7 h-7 cursor-pointer"
+              >
+                <ShoppingBagIcon className="w-full h-full text-secondary" />
+                
+              </div>
+            )}
             <div
               onClick={handleClick}
-              className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer overflow-hidden bg-primary text-primary-contrast text-sm font-semibold"
+              className={`w-10 h-10 ${PREFABS.ecommerce ? "ml-4" : ""} rounded-full flex items-center justify-center cursor-pointer overflow-hidden bg-primary text-primary-contrast text-sm font-semibold`}
             >
               {user.profileImage ? (
                 <img
