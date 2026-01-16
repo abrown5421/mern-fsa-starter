@@ -36,12 +36,14 @@ export const prefabs = {
     label: "Contact",
     enabled: persisted.contact ?? false,
     enable: async () => {
-      console.log("Enable Contact");
+      const { enableContact } = await import("./contact/enableContact.js");
+      await enableContact();
       prefabs.contact.enabled = true;
       setPrefabEnabled("contact", true);
     },
     disable: async () => {
-      console.log("Disable Contact");
+      const { disableContact } = await import("./contact/disableContact.js");
+      await disableContact();
       prefabs.contact.enabled = false;
       setPrefabEnabled("contact", false);
     },
