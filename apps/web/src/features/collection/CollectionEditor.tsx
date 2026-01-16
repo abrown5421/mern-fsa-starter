@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../loader/Loader';
 import { useAppSelector } from '../../app/store/hooks';
-import { CollectionConfig, collectionRegistry } from './collectionRegistry';
+import { collectionRegistry } from './collectionRegistry';
+import { CollectionConfig } from './types';
 
 interface CollectionEditorProps {
   id?: string;
@@ -18,6 +19,7 @@ const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureTy
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const collectionConfig: CollectionConfig | undefined = collectionRegistry[featureType];
+  const readOnlyFields: string[] = collectionConfig.readOnlyFields || [];
 
   if (!collectionConfig) {
     return (
@@ -111,7 +113,9 @@ const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureTy
 
         <form className="space-y-6 bg-neutral3 p-6 rounded-lg" onSubmit={handleSubmit}>
           {schema.fields.map((field) => {
-            const isDisabled = field.name === 'type' && user?.type !== 'admin';
+            const isDisabled = 
+              readOnlyFields.includes(field.name) || 
+              (field.name === 'type' && user?.type !== 'admin');
             const commonProps = {
               value: formData[field.name] || '',
               onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -120,13 +124,42 @@ const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureTy
               disabled: isDisabled,
             };
 
+            if (field.type === "Array" && Array.isArray(formData[field.name])) {
+              return (
+                <div key={field.name}>
+                  <label className="block text-sm font-medium text-neutral-contrast mb-2">
+                    {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+                  </label>
+                  {isDisabled ? (
+                    <ol className="pl-5 list-decimal text-neutral-contrast">
+                      {formData[field.name].map((item: any, index: number) => (
+                        <li key={index}>{item.toString()}</li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <input
+                      type="text"
+                      value={formData[field.name]}
+                      onChange={(e) => handleChange(field.name, e.target.value)}
+                      className="w-full input-primary"
+                    />
+                  )}
+                </div>
+              );
+            }
+
             if (field.enum) {
               return (
                 <div key={field.name}>
                   <label className="block text-sm font-medium text-neutral-contrast mb-2">
                     {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
                   </label>
-                  <select {...commonProps}>
+                  <select
+                    value={formData[field.name] || ""}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    className={`w-full ${isDisabled ? "input-disabled" : "input-primary"}`}
+                    disabled={isDisabled}
+                  >
                     {field.enum.map((val) => (
                       <option key={val} value={val}>
                         {val.charAt(0).toUpperCase() + val.slice(1)}
@@ -138,19 +171,49 @@ const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureTy
               );
             }
 
-            let inputType: string = 'text';
-            if (field.type === 'Number') inputType = 'number';
-            else if (field.type === 'Boolean') inputType = 'checkbox';
-            else if (field.name.toLowerCase().includes('password')) inputType = 'password';
-            else if (field.name.toLowerCase().includes('email')) inputType = 'email';
+            let inputType: string = "text";
+            if (field.type === "Number") inputType = "number";
+            else if (field.type === "Boolean") inputType = "checkbox";
+            else if (field.name.toLowerCase().includes("password")) inputType = "password";
+            else if (field.name.toLowerCase().includes("email")) inputType = "email";
 
             return (
               <div key={field.name}>
                 <label className="block text-sm font-medium text-neutral-contrast mb-2">
                   {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
-                  {field.required && ' *'}
+                  {field.required && " *"}
                 </label>
-                <input {...commonProps} type={inputType} checked={inputType === 'checkbox' ? formData[field.name] : undefined} />
+                {inputType === "checkbox" ? (
+                  <div className="flex items-center mb-4">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData[field.name]}
+                        onChange={(e) => handleChange(field.name, e.target.checked)}
+                        disabled={isDisabled}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`w-11 h-6 bg-gray-200 rounded-full transition-all ${
+                          formData[field.name] ? 'bg-primary' : ''
+                        }`}
+                      ></div>
+                      <div
+                        className={`absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform ${
+                          formData[field.name] ? 'translate-x-5' : ''
+                        }`}
+                      ></div>
+                    </label>
+                  </div>
+                ) : (
+                  <input
+                    type={inputType}
+                    value={formData[field.name]}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    className={`w-full ${isDisabled ? "input-disabled" : "input-primary"}`}
+                    disabled={isDisabled}
+                  />
+                )}
                 {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
               </div>
             );

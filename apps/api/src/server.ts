@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import { connectDB } from "./db";
 import userRoutes from "./routes/users.routes";
 import authRoutes from "./routes/auth.routes";
+import blogPostRoutes from "./routes/blogPosts.routes";
+import productRoutes from "./routes/products.routes";
+import orderRoutes from "./routes/orders.routes";
 import cookieParser from "cookie-parser";
 import integrationsRoutes from "./integrations/routes/integrations.routes";
 
@@ -56,6 +59,9 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/integrations", integrationsRoutes);
+app.use("/api/blogPosts", blogPostRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {

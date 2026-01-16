@@ -1,4 +1,4 @@
-export const blogTemplate = (pageName: string) => `import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useNavigate } from "react-router-dom";
 import { useGetBlogPostsQuery } from "../../app/store/api/blogPostsApi";
 import Loader from "../../features/loader/Loader";
@@ -7,7 +7,7 @@ import { useMemo, useState } from 'react';
 
 const POSTS_PER_PAGE = 20;
 
-const ${pageName} = () => {
+const Blog = () => {
   const navigate = useNavigate();
   const { data: posts, isLoading, error } = useGetBlogPostsQuery();
 
@@ -94,7 +94,7 @@ const ${pageName} = () => {
             {paginatedPosts.map((post: any) => (
               <div
                 key={post._id}
-                onClick={() => navigate(\`/blog/\${post._id}\`)}
+                onClick={() => navigate(`/blog/${post._id}`)}
                 className="cursor-pointer relative bg-white shadow rounded overflow-hidden flex flex-col transition-transform transform hover:scale-101"
               >
                 <div className='absolute top-5 right-5 text-xs bg-neutral text-neutral-contrast px-3 py-1 rounded-lg'>
@@ -137,5 +137,4 @@ const ${pageName} = () => {
   );
 };
 
-export default ${pageName};
-`;
+export default Blog;

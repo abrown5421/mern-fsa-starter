@@ -1,4 +1,4 @@
-export const productsTemplate = (pageName: string) => `import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useGetProductsQuery } from '../../app/store/api/productsApi';
@@ -13,7 +13,7 @@ import SearchBar from '../../features/searchBar/SearchBar';
 
 const PRODUCTS_PER_PAGE = 20;
 
-const ${pageName} = () => {
+const Products = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { data: products, isLoading, error } = useGetProductsQuery();
@@ -152,7 +152,7 @@ const ${pageName} = () => {
             {paginatedProducts.map(product => (
               <div
                 key={product._id}
-                onClick={() => navigate(\`/product/\${product._id}\`)}
+                onClick={() => navigate(`/product/${product._id}`)}
                 className="rounded-md overflow-hidden shadow-xl flex flex-col h-full cursor-pointer bg-white"
               >
                 <img
@@ -204,5 +204,4 @@ const ${pageName} = () => {
   );
 };
 
-export default ${pageName};
-`;
+export default Products;

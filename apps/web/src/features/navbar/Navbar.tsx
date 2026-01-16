@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
 import { openDrawer } from "../drawer/drawerSlice";
 import { motion } from "framer-motion";
 import { PREFABS } from "../../config/prefabs";
+import { useGetPendingOrderQuery } from "../../app/store/api/ordersApi";
 
 const Navbar: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -13,6 +14,7 @@ const Navbar: React.FC = () => {
   const isAuth = location.pathname === "/auth";
 
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { data: userOrder } = useGetPendingOrderQuery(user?._id!, {skip: !user?._id,});
   const getGreeting = () => {
     const hour = new Date().getHours();
 
@@ -46,15 +48,20 @@ const Navbar: React.FC = () => {
         <Link className={classString("/")} to="/">
           Home
         </Link>
-        <Link
-          className="px-4 hover:text-primary"
-          target="_blank"
-          to="https://google.com"
-        >
-          Test
-        </Link>
 
         {/* new links inserted here */}
+        <Link className={classString("/products")} to="/products">
+          Products
+        </Link>
+        <Link className={classString("/staff")} to="/staff">
+          Staff
+        </Link>
+        <Link className={classString("/blog")} to="/blog">
+          Blog
+        </Link>
+        <Link className={classString("/contact")} to="/contact">
+          Contact
+        </Link>
 
         {!isAuthenticated && (
           <motion.div
@@ -81,6 +88,11 @@ const Navbar: React.FC = () => {
                 className="relative w-7 h-7 cursor-pointer"
               >
                 <ShoppingBagIcon className="w-full h-full text-secondary" />
+                        {userOrder?.order_item_count ? (
+                        <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-neutral bg-red-500 rounded-full">
+                            {userOrder.order_item_count}
+                        </span>
+                        ) : null}
               </div>
             )}
             <div
