@@ -68,7 +68,7 @@ const NavbarDrawer: React.FC = () => {
           <Link
             onClick={closeOnClick}
             className={classString("/profile")}
-            to="/profile"
+            to={`/profile/${user?._id}`}
           >
             Profile
           </Link>
