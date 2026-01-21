@@ -55,7 +55,7 @@ const App: React.FC = () => {
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<Home />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/profile" element={<Profile />} />{" "}
+              <Route path="/profile/:id" element={<Profile />} />{" "}
               {/* new routes inserted here */}
               <Route path="/products" element={<Products />} />
               <Route path="/product/:id" element={<Product />} />

@@ -8,6 +8,13 @@ type Address = {
   addrZip: number
 }
 
+type ProfileBanner = {
+  gradient: string;
+};
+
+const DEFAULT_GRADIENT =
+  'linear-gradient(135deg, #030712 0%, #FE9A00 100%)';
+
 const AddressSchema = new Schema<Address>(
   {
     addrLine1: { type: String, required: true },
@@ -30,9 +37,18 @@ export interface IUser extends Document {
   sameAddress: boolean;
   profileImage?: string;
   bio?: string;
+  profileBanner?: ProfileBanner;
   createdAt: Date;
   updatedAt: Date;
 }
+
+const ProfileBannerSchema = new Schema<ProfileBanner>(
+  {
+    gradient: { type: String, required: true, default: DEFAULT_GRADIENT },
+  },
+  { _id: false } 
+);
+
 
 const UserSchema: Schema<IUser> = new Schema(
   {
@@ -46,6 +62,7 @@ const UserSchema: Schema<IUser> = new Schema(
     sameAddress: { type: Boolean },
     profileImage: { type: String },
     bio: { type: String },
+    profileBanner: { type: ProfileBannerSchema, default: { gradient: DEFAULT_GRADIENT } },
   },
   { timestamps: true }
 );

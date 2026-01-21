@@ -8,6 +8,10 @@ export interface Address {
   addrZip: number;
 }
 
+export interface ProfileBanner {
+  gradient: string;
+}
+
 export interface IUser {
   _id: string;
   firstName: string;
@@ -19,6 +23,7 @@ export interface IUser {
   sameAddress?: boolean;
   profileImage?: string;
   bio?: string;
+  profileBanner?: ProfileBanner;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,6 +39,7 @@ export interface CreateUserDto {
   sameAddress?: boolean;
   profileImage?: string;
   bio?: string;
+  profileBanner?: ProfileBanner;
 }
 
 export interface UpdateUserDto {
@@ -47,4 +53,5 @@ export interface UpdateUserDto {
   sameAddress?: boolean;
   profileImage?: string;
   bio?: string;
+  profileBanner?: ProfileBanner;
 }

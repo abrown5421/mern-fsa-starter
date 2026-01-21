@@ -8,6 +8,9 @@ import Loader from "../../features/loader/Loader";
 import { useNavigate } from "react-router-dom";
 import OrderSummary from "../../features/orderSummary/OrderSummary";
 import { useUpdateUserMutation } from "../../app/store/api/usersApi";
+import CustomerInfoForm from "../../features/forms/CustomerInfoForm";
+import AddressBlock from "../../features/forms/AddressBlock";
+import FormInput from "../../features/forms/FormInput";
 
 interface CheckoutFormState {
   firstName: string;
@@ -45,74 +48,6 @@ const emptyAddress: Address = {
   addrState: "",
   addrZip: 0,
 };
-
-const FormInput = ({
-  name,
-  value,
-  onChange,
-  placeholder,
-  error,
-  type = "text",
-  className = "",
-  inputRef,
-}: any) => (
-  <div className={`flex flex-col ${className}`}>
-    <input
-      ref={inputRef}
-      type={type}
-      name={name}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className={`${
-        error ? "border-red-500" : "border-transparent"
-      } input-primary`}
-    />
-    {error && <span className="text-red-500 text-sm mt-1">{error}</span>}
-  </div>
-);
-
-const AddressSection = ({ prefix, address, errors, onChange }: any) => (
-  <div className="grid md:grid-cols-2 gap-4">
-    <FormInput
-      name={`${prefix}.addrLine1`}
-      value={address.addrLine1}
-      onChange={onChange}
-      placeholder="Address Line 1"
-      error={errors?.addrLine1}
-      className="md:col-span-2"
-    />
-    <input
-      name={`${prefix}.addrLine2`}
-      value={address.addrLine2}
-      onChange={onChange}
-      placeholder="Address Line 2"
-      className="md:col-span-2 input-primary"
-    />
-    <FormInput
-      name={`${prefix}.addrCity`}
-      value={address.addrCity}
-      onChange={onChange}
-      placeholder="City"
-      error={errors?.addrCity}
-    />
-    <FormInput
-      name={`${prefix}.addrState`}
-      value={address.addrState}
-      onChange={onChange}
-      placeholder="State"
-      error={errors?.addrState}
-    />
-    <FormInput
-      name={`${prefix}.addrZip`}
-      value={address.addrZip || ""}
-      onChange={onChange}
-      placeholder="Zip Code"
-      error={errors?.addrZip}
-      className="md:col-span-2"
-    />
-  </div>
-);
 
 const Checkout = () => {
   const dispatch = useAppDispatch();
@@ -476,84 +411,22 @@ const Checkout = () => {
           </div>
           <div className="grid lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-neutral3 rounded-lg p-6 space-y-4">
-                <h2 className="text-xl font-semibold text-neutral font-primary">
-                  Customer Information
-                </h2>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <FormInput
-                    name="firstName"
-                    value={form.firstName}
-                    onChange={handleChange}
-                    placeholder="First Name"
-                    error={errors.firstName}
-                  />
-                  <FormInput
-                    name="lastName"
-                    value={form.lastName}
-                    onChange={handleChange}
-                    placeholder="Last Name"
-                    error={errors.lastName}
-                  />
-                  <FormInput
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="Email"
-                    error={errors.email}
-                    className="md:col-span-2"
-                  />
-                </div>
-              </div>
+              
+              <CustomerInfoForm
+                firstName={form.firstName}
+                lastName={form.lastName}
+                email={form.email}
+                errors={errors}
+                onChange={handleChange}
+              />
 
-              <div className="bg-neutral3 rounded-lg p-6 space-y-4">
-                <h2 className="text-xl font-semibold text-neutral font-primary">
-                  Mailing Address
-                </h2>
-                <AddressSection
-                  prefix="mailingAddress"
-                  address={form.mailingAddress}
-                  errors={errors.mailingAddress}
-                  onChange={handleChange}
-                />
-                <label className="flex items-center gap-2 text-neutral-contrast text-sm">
-                  <input
-                    type="checkbox"
-                    name="sameAddress"
-                    checked={form.sameAddress}
-                    onChange={handleChange}
-                  />
-                  Billing address is the same as mailing
-                </label>
-              </div>
-
-              <AnimatePresence initial={false}>
-                {!form.sameAddress && (
-                  <motion.div
-                    key="billing-address"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{
-                      height: { duration: 0.35 },
-                      opacity: { duration: 0.2 },
-                    }}
-                    className="overflow-hidden"
-                  >
-                    <div className="bg-neutral3 rounded-lg p-6 space-y-4">
-                      <h2 className="text-xl font-semibold text-neutral font-primary">
-                        Billing Address
-                      </h2>
-                      <AddressSection
-                        prefix="billingAddress"
-                        address={form.billingAddress}
-                        errors={errors.billingAddress}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <AddressBlock
+                mailingAddress={form.mailingAddress}
+                billingAddress={form.billingAddress}
+                sameAddress={form.sameAddress}
+                errors={errors}
+                onChange={handleChange}
+              />
 
               <div className="bg-neutral3 rounded-lg p-6 space-y-4">
                 <h2 className="text-xl font-semibold text-neutral font-primary">
