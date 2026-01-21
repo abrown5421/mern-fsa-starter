@@ -66,6 +66,12 @@ const AdminOrder = () => {
             label: "Order_item_count",
             hideOnSmall: false,
           },
+          { key: "order_items", label: "Order_items", hideOnSmall: true },
+          {
+            key: "order_item_subtotal",
+            label: "Order_item_subtotal",
+            hideOnSmall: true,
+          },
           { key: "order_item_tax", label: "Order_item_tax", hideOnSmall: true },
           {
             key: "createdAt",

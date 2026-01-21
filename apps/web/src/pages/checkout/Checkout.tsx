@@ -484,8 +484,6 @@ const Checkout = () => {
                     </div>
                   </label>
 
-                  
-
                   <p className="text-xs text-gray-500">
                     By checking this box, you confirm that, to the best of your knowledge,
                     the information provided above is accurate. You also acknowledge that

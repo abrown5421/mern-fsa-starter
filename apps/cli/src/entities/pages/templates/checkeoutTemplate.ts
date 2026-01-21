@@ -65,6 +65,14 @@ const ${pageName} = () => {
     payment: { cardNumber: "", expiry: "", cvv: "" },
   });
 
+  const emptyAddress: Address = {
+    addrLine1: "",
+    addrLine2: "",
+    addrCity: "",
+    addrState: "",
+    addrZip: 0,
+  };
+  
   const formatExpiry = (
     raw: string,
     prev: string,
