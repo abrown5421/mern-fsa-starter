@@ -29,6 +29,7 @@ export interface IUser extends Document {
   billingAddress: Address;
   sameAddress: boolean;
   profileImage?: string;
+  bio?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -44,6 +45,7 @@ const UserSchema: Schema<IUser> = new Schema(
     billingAddress: { type: AddressSchema },
     sameAddress: { type: Boolean },
     profileImage: { type: String },
+    bio: { type: String },
   },
   { timestamps: true }
 );
