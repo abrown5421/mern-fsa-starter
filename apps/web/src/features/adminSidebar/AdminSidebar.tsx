@@ -55,7 +55,7 @@ const AdminSidebar: React.FC = () => {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3 }}
-      className="sup-min-nav min-w-[345px] transition-all bg-neutral-700 text-white py-6 md:p-4 flex md:flex-2 md:flex-col shadow-[2px_0_4px_rgba(0,0,0,0.1)] md:relative z-20 absolute sm:left-0 top-1/2 transform"
+      className="sup-min-nav max-w-86.25 transition-all bg-neutral-700 text-white py-6 md:p-4 flex md:flex-2 md:flex-col shadow-[2px_0_4px_rgba(0,0,0,0.1)] md:relative z-20 absolute sm:left-0 top-1/2 transform"
     >
       <EllipsisVerticalIcon
         onClick={handleOpenSidebar}

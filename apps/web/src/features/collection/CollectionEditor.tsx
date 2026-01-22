@@ -130,24 +130,15 @@ const CollectionEditor: React.FC<CollectionEditorProps> = ({ id, mode, featureTy
                   <label className="block text-sm font-medium text-neutral-contrast mb-2">
                     {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
                   </label>
-                  {isDisabled ? (
-                    <ol className="pl-5 list-decimal text-neutral-contrast">
-                      {formData[field.name].map((item: any, index: number) => (
-                        <li key={index}>{item.toString()}</li>
-                      ))}
-                    </ol>
-                  ) : (
-                    <input
-                      type="text"
-                      value={formData[field.name]}
-                      onChange={(e) => handleChange(field.name, e.target.value)}
-                      className="w-full input-primary"
-                    />
-                  )}
+
+                  <ul className="pl-5 list-disc text-neutral-contrast">
+                    {formData[field.name].map((item: any, index: number) => (
+                      <li key={index}>{item?.toString()}</li>
+                    ))}
+                  </ul>
                 </div>
               );
             }
-
             if (field.enum) {
               return (
                 <div key={field.name}>
