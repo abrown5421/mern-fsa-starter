@@ -1,15 +1,31 @@
 import { motion } from 'framer-motion';
-import { useGetOrdersQuery } from '../../app/store/api/ordersApi';
 import { useGetUsersQuery } from '../../app/store/api/usersApi';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Loader from '../../features/loader/Loader';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { PREFABS } from "../../config/prefabs";
 
+interface Order {
+  createdAt: string;
+  order_item_total: number;
+}
+
 const AdminDashboard = () => {
   const hasEcommerce = Boolean(PREFABS.ecommerce);
-  const { data: orders, isLoading: isOrdersLoading, error: orderError } = useGetOrdersQuery(undefined, { skip: !hasEcommerce });
   const { data: users, isLoading: isUsersLoading, error: userError} = useGetUsersQuery();
+  const [ordersQuery, setOrdersQuery] = useState<any>(null);
+
+  useEffect(() => {
+    if (hasEcommerce) {
+      import('../../app/store/api/ordersApi').then((mod) => {
+        setOrdersQuery(mod.useGetOrdersQuery());
+      });
+    }
+  }, [hasEcommerce]);
+
+  const orders = ordersQuery?.data;
+  const isOrdersLoading = ordersQuery?.isLoading;
+  const orderError = ordersQuery?.error;
 
   const userGrowthData = useMemo(() => {
     if (!users || users.length === 0) return [];
@@ -37,9 +53,9 @@ const AdminDashboard = () => {
   const ordersData = useMemo(() => {
     if (!hasEcommerce || !orders || orders.length === 0) return [];
 
-    const dailyOrders = new Map();
+    const dailyOrders = new Map<string, { count: number; revenue: number }>();
 
-    orders.forEach(order => {
+    (orders as Order[]).forEach(order => {
       const date = new Date(order.createdAt).toISOString().split('T')[0];
       const existing = dailyOrders.get(date) || { count: 0, revenue: 0 };
 
@@ -66,14 +82,12 @@ const AdminDashboard = () => {
     const totalUsers = users?.length || 0;
 
     if (!hasEcommerce) {
-      return {
-        totalUsers,
-      };
+      return { totalUsers };
     }
 
-    const totalOrders = orders?.length || 0;
+    const totalOrders = (orders as Order[])?.length || 0;
     const totalRevenue =
-      orders?.reduce((sum, o) => sum + (o.order_item_total || 0), 0) || 0;
+      (orders as Order[])?.reduce((sum, o) => sum + (o.order_item_total || 0), 0) || 0;
 
     const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
