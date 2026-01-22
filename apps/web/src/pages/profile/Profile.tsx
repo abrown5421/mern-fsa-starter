@@ -325,11 +325,11 @@ const Profile = () => {
 
   if (error || !user) {
     return (
-      <div className="bg-neutral sup-min-nav relative z-0 flex flex-col justify-center items-center p-8">
-        <h2 className="text-2xl font-semibold mb-2 text-red-500 font-primary">
+      <div className="bg-neutral sup-min-nav relative z-0 flex flex-col justify-center items-center p-4 sm:p-8">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-2 text-red-500 font-primary text-center">
           User Not Found
         </h2>
-        <p className="text-neutral-500">
+        <p className="text-neutral-500 text-center">
           Sorry, we couldn't find the user you were looking for.
         </p>
       </div>
@@ -345,7 +345,7 @@ const Profile = () => {
       className="bg-neutral sup-min-nav relative z-0 flex flex-col items-center"
     >
       <div className="relative w-full">
-        <div className="w-full" style={{ height: 220, background: gradient }}>
+        <div className="w-full h-32 sm:h-44 md:h-52 lg:h-56" style={{ background: gradient }}>
           <GradientBanner
             gradient={savedGradient}
             editable={ownProf}
@@ -354,10 +354,10 @@ const Profile = () => {
           />
         </div>
         <div
-          className="flex flex-col max-w-6xl mx-auto z-25"
-          style={{ marginTop: -100 }}
+          className="flex flex-col w-full max-w-6xl mx-auto z-25 px-4"
+          style={{ marginTop: -60 }}
         >
-          <div className="z-25 w-40 h-40 rounded-full overflow-hidden bg-secondary text-primary-contrast text-5xl font-semibold border-4 border-neutral-900 shadow-lg flex items-center justify-center">
+          <div className="z-25 w-40 h-40 rounded-full overflow-hidden bg-secondary text-primary-contrast text-3xl sm:text-4xl md:text-5xl font-semibold border-4 border-neutral-900 shadow-lg flex items-center justify-center">
             {user.profileImage ? (
               <img
                 src={user.profileImage}
@@ -368,18 +368,22 @@ const Profile = () => {
               <>{`${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`}</>
             )}
           </div>
-          <div className="flex flex-col w-full max-w-6xl mx-auto z-25 p-4">
-            <div className="flex flex-row">
-              <div className="flex flex-col flex-3">
-                <h1 className="text-2xl font-bold font-primary">
+          <div className="flex flex-col w-full max-w-6xl mx-auto z-25 py-4">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex flex-col lg:flex-3">
+                <h1 className="text-xl sm:text-2xl font-bold font-primary">
                   {user.firstName} {user.lastName}
                 </h1>
-                <p className='text-neutral-500 mt-2 flex flex-row'>
-                  <AtSymbolIcon className='h-5 w-5 text-primary mr-2' />
-                  {user.email}
+                <p className='text-neutral-500 mt-2 flex flex-row items-center'>
+                  <AtSymbolIcon className='h-4 w-4 sm:h-5 sm:w-5 text-primary mr-2 shrink-0' />
+                  <span className="truncate">{user.email}</span>
+                </p>
+                <div className="block lg:hidden h-px w-full bg-neutral-contrast/25 my-4" />
+                <p className="block lg:hidden text-neutral-500 text-sm sm:text-base">
+                  {user.bio ? user.bio : "This user has not saved a bio yet"}
                 </p>
               </div>
-              <div className="flex flex-col flex-8 justify-end px-4">
+              <div className="flex flex-col lg:flex-8 justify-end lg:px-4">
                 <div className="flex flex-row relative">
                   {tabs.map((tab) => (
                     <button
@@ -388,7 +392,7 @@ const Profile = () => {
                         tabsRef.current[tab] = el;
                       }}
                       onClick={() => setActiveTab(tab)}
-                      className={`px-2 font-medium transition-colors ${
+                      className={`px-3 sm:px-4 py-2 font-medium transition-colors ${
                         activeTab === tab
                           ? "text-primary"
                           : "text-neutral-500 hover:text-neutral-300"
@@ -401,11 +405,11 @@ const Profile = () => {
               </div>
             </div>
             <div className="relative my-4 w-full" ref={tabsContainerRef}>
-              <div className="flex flex-row">
-                <div className="flex flex-col flex-3">
+              <div className="flex flex-col lg:flex-row">
+                <div className="hidden lg:flex lg:flex-3">
                   <div className="h-px w-full bg-neutral-contrast/25" />
                 </div>
-                <div className="flex flex-col flex-8 px-4">
+                <div className="flex flex-col lg:flex-8 lg:px-4">
                   <div className="h-px w-full bg-neutral-contrast/25" />
                 </div>
               </div>
@@ -422,13 +426,13 @@ const Profile = () => {
                 }}
               />
             </div>
-            <div className="flex flex-row">
-              <div className="flex flex-col flex-3">
-                <p className="text-neutral-500">
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-0">
+              <div className="hidden lg:flex lg:flex-col lg:flex-3">
+                <p className="text-neutral-500 text-sm sm:text-base">
                   {user.bio ? user.bio : "This user has not saved a bio yet"}
                 </p>
               </div>
-              <div className="flex flex-col flex-8 px-4">
+              <div className="flex flex-col lg:flex-8 lg:px-4">
                 <AnimatePresence mode="wait">
                   {activeTab === "Home" && (
                     <motion.div
@@ -438,7 +442,7 @@ const Profile = () => {
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <div className="text-neutral-400">
+                      <div className="text-neutral-400 text-sm sm:text-base">
                         Welcome to {user.firstName}'s profile home page.
                       </div>
                     </motion.div>
@@ -472,7 +476,7 @@ const Profile = () => {
                       />
 
                       <button 
-                        className="btn-primary" 
+                        className="btn-primary w-full sm:w-auto text-sm sm:text-base" 
                         onClick={handleSaveProfile}
                         disabled={isSaving || changedFields.size === 0}
                       >
