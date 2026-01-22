@@ -42,7 +42,7 @@ const Navbar: React.FC = () => {
     `px-4 transition-all ${location.pathname === path ? "text-primary hover:text-accent" : "hover:text-primary"}`;
 
   return (
-    <div className="bg-neutral text-neutral-contrast flex flex-row justify-between items-center px-4 nav relative z-10 shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+    <div className="bg-neutral text-neutral-contrast flex flex-row justify-between items-center px-4 nav relative z-10 border-b border-neutral-contrast/15">
       <div className="text-xl font-bold font-primary">Logo</div>
       <div className="hidden lg:flex items-center">
         <Link className={classString("/")} to="/">
